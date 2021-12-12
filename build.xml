@@ -1,0 +1,43 @@
+<project name="Sigma" default="all" basedir=".">
+
+<target name="init">
+  <property name="app.name" value="tptpAntlr"/>
+  <property name="build.home" value="build"/>
+  <property name="build.classes" value="${build.home}/classes"/>
+  <property name="build.lib" value="${build.home}/lib"/>
+  <property environment="env"/>
+
+  <echo>Java Version via Ant: ${ant.java.version}</echo>
+  <echo>Java Version System Prop: ${java.version}</echo> 
+</target>
+
+<target name="compile" depends="init" description="Compile the project and place in ${build.classes}.">
+    <mkdir dir="${build.classes}"/>
+    <javac destdir="${build.classes}" debug="on" optimize="on" deprecation="on" includeantruntime="false" classpathref="compile.classpath">
+        <src refid="core.sourcepath"/>
+    </javac>
+    <copy todir="${build.lib}">
+        <fileset dir="${basedir}/lib" />
+    </copy>
+</target>
+
+<path id="core.sourcepath">
+    <pathelement path="src/java/tptp_parser"/>
+</path>
+
+<path id="compile.classpath">
+    <fileset dir="${basedir}/lib">
+        <include name="*.jar"/>
+    </fileset>
+</path>
+
+<!-- target name="all" depends="dist, api_doc" -->
+<target name="all" depends="compile">
+    <tstamp>
+        <format property="TODAY_US" pattern="yyyy-MM-dd HH:mm:ss:sss zzz" locale="en,US"/>
+    </tstamp>
+    <echo>the system date/time is ${TODAY_US}</echo>
+</target>
+
+</project>
+ 

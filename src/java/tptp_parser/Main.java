@@ -1,8 +1,10 @@
+package tptp_parser;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.stream.Stream;
 
 public class Main {
@@ -21,8 +23,9 @@ public class Main {
                 } catch (IOException e) {
                     System.out.println("EIO " + f.toString());
                     e.printStackTrace();
-                } catch (ParseException e) {
-                    System.out.println("EPE " + f.toString());
+                }
+                catch (ParseException e) {
+                    System.out.println("Eparse" + f.toString());
                     e.printStackTrace();
                 }
             });

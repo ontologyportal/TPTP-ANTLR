@@ -1,11 +1,14 @@
+package tptp_parser;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
-import parser.*;
+import java.lang.reflect.InvocationTargetException;
+
+import java.lang.reflect.Method;
+import java.text.ParseException;
 
 public class ThfAstGen {
 
@@ -18,13 +21,13 @@ public class ThfAstGen {
      */
     public static ParseContext parse(ANTLRInputStream inputStream, String rule, String name) throws ParseException {
 
-        tptp_v7_0_0_0Lexer lexer = new tptp_v7_0_0_0Lexer(inputStream);
+        TptpLexer lexer = new TptpLexer(inputStream);
         lexer.removeErrorListeners(); // only for production
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         tokens.fill();
 
 
-        tptp_v7_0_0_0Parser parser = new tptp_v7_0_0_0Parser(tokens);
+        TptpParser parser = new TptpParser(tokens);
         parser.removeErrorListeners(); // only for production
         ParseContext parseContext = new ParseContext();
 
@@ -44,14 +47,14 @@ public class ThfAstGen {
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
                 InvocationTargetException e) {
             e.printStackTrace();
-            throw new ParseException(e.getMessage());
+            throw new ParseException(e.getMessage(),0);
         }        // the above or the below
 
         // create ast
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(treeListener, parserRuleContext);
 
-        // create and return test.src.main.java.ParseContext
+        // create and return test.src.main.java.tptp_parser.ParseContext
         parseContext.parserRuleContext = parserRuleContext;
         parseContext.name = name;
         parseContext.error = treeListener.error;
