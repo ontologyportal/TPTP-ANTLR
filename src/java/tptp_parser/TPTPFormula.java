@@ -7,13 +7,19 @@ public class TPTPFormula {
     public String name;
     public String role = "";
     public String type = ""; // fof,cnf, tff etc
-    public ArrayList<String> supports = new ArrayList<>();
-    public String infRule = "";
+    public ArrayList<String> supports = new ArrayList<>();  // was just source
+    public String infRule = ""; // was just source
     public int startLine = 0;
     public int endLine = 0;
-    public String sourceFile = "";
+    public String sourceFile = ""; // was source
     public String formula = "";
-    public TptpParser.Annotated_formulaContext parsedFormula = null;
+    public TptpParser.Annotated_formulaContext parsedFormula = null; //was item
+    public ArrayList<TPTPFormula> parent;
+    public ArrayList<TPTPFormula> child;
+    public String sumo = "";  // SUMO syntax equivalent of TPTP statement
+    public TptpParser.Cnf_formulaContext cnf = null;
+    public TptpParser.Fof_formulaContext fof = null;
+    public TptpParser.Tff_formulaContext tff = null;
 
     /** ***************************************************************
      */

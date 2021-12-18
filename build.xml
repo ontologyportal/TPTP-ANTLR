@@ -6,12 +6,20 @@
   <property name="build.classes" value="${build.home}/classes"/>
   <property name="build.lib" value="${build.home}/lib"/>
   <property environment="env"/>
-
+  <property name="sigmakee.home" value="${env.SIGMA_SRC}" />
   <echo>Java Version via Ant: ${ant.java.version}</echo>
   <echo>Java Version System Prop: ${java.version}</echo> 
 </target>
 
-<target name="compile" depends="init" description="Compile the project and place in ${build.classes}.">
+<target name="sigma" depends="init">
+    <echo message="SIGMA_HOME is set to = ${env.SIGMA_HOME}"/>
+    <echo message="sigmakee is set to = ${env.SIGMA_SRC}"/>
+    <echo>sigmakee home: ${sigmakee.home}</echo>
+    <ant antfile="../sigmakee/build.xml" inheritAll="false" target="all" />
+    <copy todir="${basedir}/lib" file="${sigmakee.home}/build/sigmakee.jar" />
+</target>
+
+<target name="compile" depends="sigma" description="Compile the project and place in ${build.classes}.">
     <mkdir dir="${build.classes}"/>
     <javac destdir="${build.classes}" debug="on" optimize="on" deprecation="on" includeantruntime="false" classpathref="compile.classpath">
         <src refid="core.sourcepath"/>
@@ -22,7 +30,7 @@
 </target>
 
 <path id="core.sourcepath">
-    <pathelement path="src/java/tptp_parser"/>
+    <pathelement path="src/java"/>
 </path>
 
 <path id="compile.classpath">
