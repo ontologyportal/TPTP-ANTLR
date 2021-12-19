@@ -1,11 +1,7 @@
 package tptp_parser;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
-
 import java.util.HashMap;
 
 public class CNFVisitor extends AbstractParseTreeVisitor<String> {
