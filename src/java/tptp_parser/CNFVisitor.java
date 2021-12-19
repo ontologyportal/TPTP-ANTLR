@@ -18,6 +18,8 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         put(">=", "greaterThanOrEqualTo");
         put("<=", "lessThanOrEqualTo");
         put("=", "equal");
+        put("!", "forall");
+        put("?", "exists");
     }};;
 
     /** ***************************************************************
