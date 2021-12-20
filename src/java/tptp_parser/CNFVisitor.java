@@ -8,16 +8,6 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
 
     public static boolean debug = false;
 
-    public static HashMap<String,String> sumoTable = new HashMap<String,String>() {{
-        put(">", "greaterThan");
-        put("<", "lessThan");
-        put(">=", "greaterThanOrEqualTo");
-        put("<=", "lessThanOrEqualTo");
-        put("=", "equal");
-        put("!", "forall");
-        put("?", "exists");
-    }};;
-
     /** ***************************************************************
      * cnf_formula             : cnf_disjunction | '(' cnf_disjunction ')';
      */
@@ -63,8 +53,9 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
                 else {
                     f.formula = f.formula + "|" + newf.formula;
                     if (f.sumo.startsWith("(or"))
-                        f.sumo = f.sumo + " " + newf.sumo;
-                    f.sumo = "(or " + f.sumo + " " + newf.sumo;
+                        f.sumo = f.sumo + " " + newf.sumo + ")";
+                    else
+                        f.sumo = "(or " + f.sumo + " " + newf.sumo + ")";
                 }
             }
         }
@@ -172,15 +163,11 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofPlainTerm() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$ConstantContext")) {
-                String term = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    f.sumo = "?" + term;
-                else
-                    f.sumo = c.getText();
+                f.sumo = TPTPVisitor.translateSUMOterm(c.getText());
                 f.formula = c.getText();
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$FunctorContext")) {
-                f.sumo = "(" + c.getText();
+                f.sumo = "(" + TPTPVisitor.translateSUMOterm(c.getText());
                 f.formula = c.getText() + "(";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_argumentsContext")) {
@@ -221,6 +208,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         f.sumo = f.sumo;
         f.formula = f.formula;
         if (debug) System.out.println("visitFofArguments() returning: " + f);
+        if (debug) System.out.println("visitFofArguments() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -242,9 +230,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitFofTerm() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$VariableContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 f.formula = term;
                 f.sumo = sumoTerm;
             }
@@ -255,6 +241,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         f.sumo = f.sumo;
         f.formula = f.formula;
         if (debug) System.out.println("visitFofTerm() returning: " + f);
+        if (debug) System.out.println("visitFofTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -284,6 +271,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         f.sumo = f.sumo;
         f.formula = f.formula;
         if (debug) System.out.println("visitFunctionTerm() returning: " + f);
+        if (debug) System.out.println("visitFunctionTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -303,12 +291,12 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             if (c.getClass().getName().equals("tptp_parser.TptpParser$System_constantContext")) {
                 String term = c.getText();
                 f.formula = term;
-                f.sumo = term;
+                f.sumo = TPTPVisitor.translateSUMOterm(term);
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$System_functorContext")) {
                 String term = c.getText();
                 f.formula = term + "(";
-                f.sumo = "(" + term;
+                f.sumo = "(" + TPTPVisitor.translateSUMOterm(term);
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_argumentsContext")) {
                 TPTPFormula newf = visitFofArguments((TptpParser.Fof_argumentsContext) c);
@@ -319,6 +307,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         f.sumo = f.sumo;
         f.formula = f.formula;
         if (debug) System.out.println("visitFofSystemTerm() returning: " + f);
+        if (debug) System.out.println("visitFofSystemTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -343,6 +332,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofDefinedAtomicFormula() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedAtomicFormula() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -358,14 +348,12 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         if (debug) System.out.println("visitFofDefinedInfixFormula() # children: " + context.children.size());
         if (debug) System.out.println("visitFofDefinedInfixFormula() text: " + context.getText());
         String ineq = context.defined_infix_pred().getText();
-        String sumoIneq = sumoTable.get(ineq);
+        String sumoIneq = TPTPVisitor.sumoTable.get(ineq);
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofDefinedInfixFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_termContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 if (debug) System.out.println("visitFofInfixUnary() term: " + term);
                 if (f.formula.equals("")) {
                     f.formula = term;
@@ -378,6 +366,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofDefinedInfixFormula() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedInfixFormula() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -399,6 +388,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofDefinedPlainFormula() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedPlainFormula() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -417,9 +407,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitFofDefinedTerm() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Defined_termContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 f.sumo = sumoTerm;
                 f.formula = term;
             }
@@ -428,6 +416,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofDefinedTerm() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -449,6 +438,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofDefinedAtomicTerm() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedPlainTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -468,25 +458,24 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitFofDefinedPlainTerm() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Defined_constantContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 f.sumo = sumoTerm;
                 f.formula = term;
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Defined_functorContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 f.sumo = "(" + sumoTerm;
                 f.formula = term + "(";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_argumentsContext")) {
-                f = visitFofArguments((TptpParser.Fof_argumentsContext) c);
-                f.sumo = f.sumo + ")";
-                f.formula = f.formula + ")";
+                TPTPFormula newf = visitFofArguments((TptpParser.Fof_argumentsContext) c);
+                f.sumo = f.sumo + " " + newf.sumo + ")";
+                f.formula = f.formula + newf.formula + ")";
             }
         }
         if (debug) System.out.println("visitFofDefinedPlainTerm() returning: " + f);
+        if (debug) System.out.println("visitFofDefinedPlainTerm() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -505,14 +494,13 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitFofSystemAtomicFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_system_termContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 f.sumo = sumoTerm;
                 f.formula = c.getText();
             }
         }
         if (debug) System.out.println("visitFofSystemAtomicFormula() returning: " + f);
+        if (debug) System.out.println("visitFofSystemAtomicFormula() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -528,15 +516,13 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         if (debug) System.out.println("visitFofInfixUnary() # children: " + context.children.size());
         if (debug) System.out.println("visitFofInfixUnary() text: " + context.getText());
         String ineq = context.Infix_inequality().getText();
-        String sumoIneq = sumoTable.get(ineq);
+        String sumoIneq = TPTPVisitor.sumoTable.get(ineq);
         if (debug) System.out.println("visitFofInfixUnary() ineq: " + ineq);
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofInfixUnary() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_termContext")) {
                 String term = c.getText();
-                String sumoTerm = c.getText();
-                if (Character.isUpperCase(term.charAt(0)))
-                    sumoTerm = "?" + term;
+                String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 if (debug) System.out.println("visitFofInfixUnary() term: " + term);
                 if (f.formula.equals("")) {
                     f.formula = term;
@@ -555,6 +541,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             }
         }
         if (debug) System.out.println("visitFofInfixUnary() returning: " + f);
+        if (debug) System.out.println("visitFofInfixUnary() returning sumo: " + f.sumo);
         return f;
     }
 
