@@ -2,7 +2,6 @@ package tptp_parser;
 
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
-import java.util.HashMap;
 
 public class TFFVisitor extends AbstractParseTreeVisitor<String> {
 
