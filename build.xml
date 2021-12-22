@@ -1,4 +1,4 @@
-<project name="Sigma" default="all" basedir=".">
+<project name="TPTP" default="all" basedir=".">
 
 <target name="init">
   <property name="app.name" value="tptpAntlr"/>
@@ -8,18 +8,13 @@
   <property environment="env"/>
   <property name="sigmakee.home" value="${env.SIGMA_SRC}" />
   <echo>Java Version via Ant: ${ant.java.version}</echo>
-  <echo>Java Version System Prop: ${java.version}</echo> 
+  <echo>Java Version System Prop: ${java.version}</echo>
+    <delete includeemptydirs="true" failonerror="false">
+        <fileset dir="${build.home}"/> <!-- avoid problems with package name changes by deleting everything -->
+    </delete>
 </target>
 
-<target name="sigma" depends="init">
-    <echo message="SIGMA_HOME is set to = ${env.SIGMA_HOME}"/>
-    <echo message="sigmakee is set to = ${env.SIGMA_SRC}"/>
-    <echo>sigmakee home: ${sigmakee.home}</echo>
-    <ant antfile="../sigmakee/build.xml" inheritAll="false" target="all" />
-    <copy todir="${basedir}/lib" file="${sigmakee.home}/build/sigmakee.jar" />
-</target>
-
-<target name="compile" depends="sigma" description="Compile the project and place in ${build.classes}.">
+<target name="compile" depends="init" description="Compile the project and place in ${build.classes}.">
     <mkdir dir="${build.classes}"/>
     <javac destdir="${build.classes}" debug="on" optimize="on" deprecation="on" includeantruntime="false" classpathref="compile.classpath">
         <src refid="core.sourcepath"/>
@@ -41,6 +36,9 @@
 
 <!-- target name="all" depends="dist, api_doc" -->
 <target name="all" depends="compile">
+    <jar destfile="${basedir}/tptp.jar">
+        <fileset dir="${build.classes}"/>
+    </jar>
     <tstamp>
         <format property="TODAY_US" pattern="yyyy-MM-dd HH:mm:ss:sss zzz" locale="en,US"/>
     </tstamp>
