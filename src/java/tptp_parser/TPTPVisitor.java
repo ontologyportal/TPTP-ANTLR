@@ -1,6 +1,5 @@
 package tptp_parser;
 
-import com.articulate.sigma.Formula;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -11,7 +10,7 @@ import java.util.*;
 
 public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
-    public static boolean debug = false;
+    public static boolean debug = true;
     public static HashMap<String,TPTPFormula> result = new HashMap<>();
 
     public static HashMap<String,String> sumoTable = new HashMap<String,String>() {{
@@ -25,10 +24,18 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         put("!", "forall");
         put("?", "exists");
         put("~", "not");
+        put("$false", "false");
+        put("$true", "true");
         put("$greater", "greaterThan");
         put("$less", "lessThan");
         put("$greaterEq", "greaterThanOrEqualTo");
         put("$lessEq", "lessThanOrEqualTo");
+        put("$sum", "AdditionFn");
+        put("$difference", "SubtractionFn");
+        put("$product", "MultiplicationFn");
+        put("$quotient", "DivisionFn");
+        put("$ceiling", "CeilingFn");
+        put("$floor", "FloorFn");
     }};;
 
     /** ***************************************************************
@@ -91,7 +98,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
      */
     public static HashMap<String,TPTPFormula> parseString(String input) {
 
-        if (debug) System.out.println(input);
+        if (debug) System.out.println("parseString(): " + input);
         CodePointCharStream inputStream = CharStreams.fromString(input);
         TptpLexer tptpLexer = new TptpLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
