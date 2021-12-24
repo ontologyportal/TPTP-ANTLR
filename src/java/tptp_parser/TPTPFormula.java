@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class TPTPFormula {
 
     public String name;
-    public String role = "";
-    public String type = ""; // fof,cnf, tff etc
+    public String role = ""; // plain, axiom, type, etc
+    public String type = ""; // fof, cnf, tff etc
     public ArrayList<String> supports = new ArrayList<>();  // was just source
     public String infRule = ""; // was just source
     public int startLine = 0;
@@ -14,12 +14,7 @@ public class TPTPFormula {
     public String sourceFile = ""; // was source
     public String formula = "";
     public TptpParser.Annotated_formulaContext parsedFormula = null; //was item
-    public ArrayList<TPTPFormula> parent;
-    public ArrayList<TPTPFormula> child;
     public String sumo = "";  // SUMO syntax equivalent of TPTP statement
-    public TptpParser.Cnf_formulaContext cnf = null;
-    public TptpParser.Fof_formulaContext fof = null;
-    public TptpParser.Tff_formulaContext tff = null;
 
     /** ***************************************************************
      */
@@ -28,7 +23,19 @@ public class TPTPFormula {
 
     /** ***************************************************************
     */
-    public TPTPFormula(TptpParser.Annotated_formulaContext item, int id) {
+    public TPTPFormula(TPTPFormula tf) {
+
+        name = tf.name;
+        role = tf.role;
+        type = tf.type = ""; // fof,cnf, tff etc
+        supports.addAll(tf.supports);  // was just source
+        infRule = tf.infRule; // was just source
+        startLine = tf.startLine;
+        endLine = tf.endLine;
+        sourceFile = tf.sourceFile; // was source
+        formula = tf.formula;
+        parsedFormula = tf.parsedFormula = null; //was item
+        sumo = tf.sumo;  // SUMO syntax equivalent of TPTP statement
     }
 
     /** ***************************************************************

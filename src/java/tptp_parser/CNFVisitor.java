@@ -552,7 +552,6 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         System.out.println("CNFVisitor class");
         System.out.println("  options:");
         System.out.println("  -h - show this help screen");
-        System.out.println("  -f <fname> - parse the file");
     }
 
     /** ***************************************************************
@@ -576,7 +575,6 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
                     if (tf.type.equals("cnf")) {
                         System.out.println(hm.get(s) + "\n");
                         CNFVisitor cv = new CNFVisitor();
-                        cv.visitCNFFormula(tf.cnf);
                     }
                 }
             }
