@@ -1,8 +1,13 @@
 package tptp_parser;
 
+import com.articulate.sigma.utils.StringUtil;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TPTPFormula {
+
+    public static boolean debug = false;
 
     public String name;
     public String role = ""; // plain, axiom, type, etc
@@ -70,5 +75,48 @@ public class TPTPFormula {
 
         return "plain";
     }
+
+    /** ***************************************************************
+     * Take an ArrayList of TPTPFormulas and renumber them consecutively
+     * starting at 1.  Update the ArrayList of premises so that they
+     * reflect the renumbering.
+     */
+    public static ArrayList<TPTPFormula> normalizeProofStepNumbers(ArrayList<TPTPFormula> proofSteps) {
+
+        // old number, new number
+        HashMap<String,String> numberingMap = new HashMap<>();
+
+        if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): before: " + proofSteps);
+        String newIndex = "1";
+        for (int i = 0; i < proofSteps.size(); i++) {
+            //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): numberingMap: " + numberingMap);
+            TPTPFormula ps = proofSteps.get(i);
+            //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): Checking proof step: " + ps);
+            String oldIndex = ps.name;
+            if (numberingMap.containsKey(oldIndex))
+                ps.name = numberingMap.get(oldIndex).toString();
+            else {
+                //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): adding new step: " + newIndex);
+                ps.name = newIndex;
+                numberingMap.put(oldIndex,StringUtil.incStrInteger(newIndex));
+            }
+            for (int j = 0; j < ps.supports.size(); j++) {
+                String premiseNum = ps.supports.get(j);
+                //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): old premise num: " + premiseNum);
+                String newNumber = null;
+                if (numberingMap.get(premiseNum) != null)
+                    newNumber = numberingMap.get(premiseNum);
+                else {
+                    newNumber = StringUtil.incStrInteger(newIndex);
+                    numberingMap.put(premiseNum,newNumber);
+                }
+                //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): new premise num: " + newNumber);
+                ps.supports.set(j,newNumber);
+            }
+        }
+        if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): after: " + proofSteps);
+        return proofSteps;
+    }
+
 }
 
