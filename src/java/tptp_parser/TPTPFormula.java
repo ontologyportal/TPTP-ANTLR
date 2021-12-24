@@ -7,12 +7,14 @@ import java.util.HashMap;
 
 public class TPTPFormula {
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public String name;
+    public int id = 0;
     public String role = ""; // plain, axiom, type, etc
     public String type = ""; // fof, cnf, tff etc
-    public ArrayList<String> supports = new ArrayList<>();  // was just source
+    public ArrayList<String> supports = new ArrayList<>();
+    public ArrayList<Integer> intsupports = new ArrayList<>();
     public String infRule = ""; // was just source
     public int startLine = 0;
     public int endLine = 0;
@@ -83,35 +85,38 @@ public class TPTPFormula {
      */
     public static ArrayList<TPTPFormula> normalizeProofStepNumbers(ArrayList<TPTPFormula> proofSteps) {
 
-        // old number, new number
-        HashMap<String,String> numberingMap = new HashMap<>();
+        // old name, new number
+        HashMap<String,Integer> numberingMap = new HashMap<>();
 
         if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): before: " + proofSteps);
-        String newIndex = "1";
+        int newIndex = 1;
         for (int i = 0; i < proofSteps.size(); i++) {
             //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): numberingMap: " + numberingMap);
             TPTPFormula ps = proofSteps.get(i);
             //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): Checking proof step: " + ps);
             String oldIndex = ps.name;
             if (numberingMap.containsKey(oldIndex))
-                ps.name = numberingMap.get(oldIndex).toString();
+                ps.id = numberingMap.get(oldIndex);
             else {
                 //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): adding new step: " + newIndex);
-                ps.name = newIndex;
-                numberingMap.put(oldIndex,StringUtil.incStrInteger(newIndex));
+                ps.id = newIndex;
+                numberingMap.put(oldIndex,newIndex);
+                newIndex++;
             }
             for (int j = 0; j < ps.supports.size(); j++) {
                 String premiseNum = ps.supports.get(j);
                 //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): old premise num: " + premiseNum);
-                String newNumber = null;
-                if (numberingMap.get(premiseNum) != null)
+                int newNumber = 0;
+                if (numberingMap.get(premiseNum) != null) {
                     newNumber = numberingMap.get(premiseNum);
+                }
                 else {
-                    newNumber = StringUtil.incStrInteger(newIndex);
+                    newNumber = newIndex;
+                    newIndex++;
                     numberingMap.put(premiseNum,newNumber);
                 }
+                ps.intsupports.add(newNumber);
                 //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): new premise num: " + newNumber);
-                ps.supports.set(j,newNumber);
             }
         }
         if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): after: " + proofSteps);
