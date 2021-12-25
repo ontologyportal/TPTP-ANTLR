@@ -10,7 +10,7 @@ public class TPTPFormula {
     public static boolean debug = true;
 
     public String name;
-    public int id = 0;
+    public int id = 0; // ordered integer ids are used for proofs
     public String role = ""; // plain, axiom, type, etc
     public String type = ""; // fof, cnf, tff etc
     public ArrayList<String> supports = new ArrayList<>();
