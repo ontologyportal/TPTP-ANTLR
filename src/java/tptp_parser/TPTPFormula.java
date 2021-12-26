@@ -88,7 +88,7 @@ public class TPTPFormula {
         // old name, new number
         HashMap<String,Integer> numberingMap = new HashMap<>();
 
-        if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): before: " + proofSteps);
+        //if (debug) System.out.println("INFO in TPTPFormula.normalizeProofStepNumbers(): before: " + proofSteps);
         int newIndex = 1;
         for (int i = 0; i < proofSteps.size(); i++) {
             //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): numberingMap: " + numberingMap);
@@ -119,7 +119,7 @@ public class TPTPFormula {
                 //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): new premise num: " + newNumber);
             }
         }
-        if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): after: " + proofSteps);
+        //if (debug) System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): after: " + proofSteps);
         return proofSteps;
     }
 
