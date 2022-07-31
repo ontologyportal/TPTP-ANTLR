@@ -46,6 +46,13 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
             return t;
         if (Character.isUpperCase(t.charAt(0)))
             t = "?" + t;
+        if (t.contains("_THFTYPE_")) {
+            int i = t.indexOf("_THFTYPE_");
+            int start = 0;
+            if (t.startsWith("l"))
+                start = 1;
+            t = t.substring(start,i);
+        }
         if (t.startsWith("s__"))
             t = t.substring(3);
         if (t.endsWith("__m"))
@@ -109,7 +116,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         HashMap<String,TPTPFormula> hm = visitor.result;
         result = hm;
         if (hm == null || hm.values().size() == 0)
-            System.out.println("Error in SuokifVisitor.parseString(): no results for input: "  + input);
+            System.out.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
         return hm;
     }
 
@@ -132,7 +139,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         HashMap<String,TPTPFormula> hm = visitor.result;
         result = hm;
         if (hm == null || hm.values().size() == 0)
-            System.out.println("Error in SuokifVisitor.parseString(): no results for input: "  + input);
+            System.out.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
         else {
             for (TPTPFormula f : hm.values()) {
                 f.startLine = input.startLine;
@@ -196,6 +203,8 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
             if (debug)  System.out.println("visitFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Tff_annotatedContext"))
                 f = visitTFFSent((TptpParser.Tff_annotatedContext) c);
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_annotatedContext"))
+                f = visitTHFSent((TptpParser.Thf_annotatedContext) c);
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_annotatedContext"))
                 f = visitFOFSent((TptpParser.Fof_annotatedContext) c);
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Cnf_annotatedContext"))
@@ -231,6 +240,41 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                 f.role = ((TptpParser.Formula_roleContext) c).getText();
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Tff_formulaContext")) {
                 newf = TFFVisitor.visitTffFormula((TptpParser.Tff_formulaContext) c);
+            }
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")) {
+                TPTPFormula f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
+                f.supports = f2.supports;
+                f.infRule = f2.infRule;
+            }
+        }
+        f.formula = newf.formula;
+        f.sumo = newf.sumo;
+        if (debug) System.out.println("result: " + f);
+        result.put(f.name, f);
+        return f;
+    }
+
+    /** ***************************************************************
+     thf_annotated           : 'thf(' name ',' formula_role ',' thf_formula annotations? ').';
+     * Put each formula in the result map
+     */
+    public TPTPFormula visitTHFSent(TptpParser.Thf_annotatedContext context) {
+
+        if (context == null || context.children == null) return null;
+        if (debug) System.out.println("visitTHFSent() Visiting thf sentence: " + context.getText());
+        if (debug) System.out.println("visitTHFSent() # children: " + context.children.size());
+        TPTPFormula f = new TPTPFormula();
+        TPTPFormula newf = null;
+        f.type = "thf";
+        for (ParseTree c : context.children) {
+            if (debug) System.out.println("visitTHFSent() child: " + c.getClass().getName());
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+                f.name = ((TptpParser.NameContext) c).getText();
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$Formula_roleContext"))
+                f.role = ((TptpParser.Formula_roleContext) c).getText();
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_formulaContext")) {
+                if (debug) System.out.println("visitTHFSent() found formula ");
+                newf = THFVisitor.visitThfFormula((TptpParser.Thf_formulaContext) c);
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")) {
                 TPTPFormula f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
