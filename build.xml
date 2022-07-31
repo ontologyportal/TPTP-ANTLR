@@ -28,6 +28,7 @@
 
 <path id="core.sourcepath">
     <pathelement path="src/java"/>
+    <pathelement path="test/src/main/java"/>
 </path>
 
 <path id="compile.classpath">
