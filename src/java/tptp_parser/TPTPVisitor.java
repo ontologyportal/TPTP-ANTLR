@@ -20,6 +20,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         put("<=", "lessThanOrEqualTo");
         put("<=>", "<=>");
         put("=>", "=>");
+        put("@", " ");
         put("=", "equal");
         put("!", "forall");
         put("?", "exists");

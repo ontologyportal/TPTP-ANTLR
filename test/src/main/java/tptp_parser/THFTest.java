@@ -77,4 +77,17 @@ public class THFTest {
         String label = "testNeg";
         test(line,expectTHF,expectSUMO,label);
     }
+
+
+    /** ***************************************************************
+     */
+    @Test
+    public void testImp() {
+
+        String line = "thf(ax30,axiom,((! [ROW3: $i,ROW4: $i,ROW2: $i,NUMBER: $i,CLASS: $i]: (((instance_THFTYPE_IiioI @ ROW4 @ lSymbolicString_THFTYPE_i) & (instance_THFTYPE_IiioI @ ROW2 @ lHumanLanguage_THFTYPE_i) & (instance_THFTYPE_IiioI @ NUMBER @ lPositiveInteger_THFTYPE_i) & (instance_THFTYPE_IiioI @ CLASS @ lClass_THFTYPE_i)) => (((domain_THFTYPE_IiiioI @ format_THFTYPE_i @ NUMBER @ CLASS) & (instance_THFTYPE_IiioI @ format_THFTYPE_i @ lPredicate_THFTYPE_i)) => (instance_THFTYPE_IiioI @ (lListOrderFn_THFTYPE_IiiiI @ (lListFn__3Fn_THFTYPE_IiiiiI @ ROW2 @ ROW3 @ ROW4) @ NUMBER) @ CLASS)))))).";
+        String expectTHF = "(! [ROW3: $i,ROW4: $i,ROW2: $i,NUMBER: $i,CLASS: $i]: (((instance_THFTYPE_IiioI @ ROW4 @ lSymbolicString_THFTYPE_i) & (instance_THFTYPE_IiioI @ ROW2 @ lHumanLanguage_THFTYPE_i) & (instance_THFTYPE_IiioI @ NUMBER @ lPositiveInteger_THFTYPE_i) & (instance_THFTYPE_IiioI @ CLASS @ lClass_THFTYPE_i)) => (((domain_THFTYPE_IiiioI @ format_THFTYPE_i @ NUMBER @ CLASS) & (instance_THFTYPE_IiioI @ format_THFTYPE_i @ lPredicate_THFTYPE_i)) => (instance_THFTYPE_IiioI @ (lListOrderFn_THFTYPE_IiiiI @ (lListFn__3Fn_THFTYPE_IiiiiI @ ROW2 @ ROW3 @ ROW4) @ NUMBER) @ CLASS))))";
+        String expectSUMO = "(false)";
+        String label = "testImp";
+        test(line,expectTHF,expectSUMO,label);
+    }
 }
