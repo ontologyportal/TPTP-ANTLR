@@ -257,6 +257,7 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitThfBinaryFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_binary_pairContext")) {
                 f = visitThfBinaryPair((TptpParser.Thf_binary_pairContext) c);
+                f.formula = "(" + f.formula + ")";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_binary_tupleContext")) {
                 f = visitThfBinaryTuple((TptpParser.Thf_binary_tupleContext) c);
@@ -289,7 +290,10 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
                     f.sumo = newf.sumo;
                 }
                 else {
-                    f.formula = f.formula + " " + newf.formula;
+                    if (newf.sumo.startsWith("(and") || newf.sumo.startsWith("(or"))
+                        f.formula = f.formula + " (" + newf.formula + ")";
+                    else
+                        f.formula = f.formula + " " + newf.formula;
                     f.sumo = f.sumo + " " + newf.sumo;
                 }
             }
@@ -298,7 +302,10 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
                 String term = c.getText();
                 String sumoTerm = TPTPVisitor.translateSUMOterm(c.getText());
                 if (debug) System.out.println("visitThfBinaryPair() term: " + term);
-                f.formula = f.formula + " " + term + " ";
+                if (f.sumo.startsWith("(and") || f.sumo.startsWith("(or"))
+                    f.formula = "(" + f.formula + ") " + term + " ";
+                else
+                    f.formula = f.formula + term + " ";
                 f.sumo = "(" + sumoTerm + " " + f.sumo;
             }
         }
