@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class THFVisitor extends AbstractParseTreeVisitor<String> {
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     /** ***************************************************************
      * thf_formula : thf_logic_formula | thf_sequent;   // no use of thf_sequent for SUMO
@@ -351,6 +351,14 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_unary_formulaContext")) {
                 f = visitThfUnaryFormula((TptpParser.Thf_unary_formulaContext) c);
+                if (f.sumo.trim().startsWith("("))
+                    f.sumo = f.sumo;
+                else
+                    f.sumo = "(" + f.sumo + ")";
+                if (f.formula.trim().startsWith("("))
+                    f.formula = f.formula;
+                else
+                    f.formula = "(" + f.formula + ")";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_atomContext")) {
                 f = visitThfAtom((TptpParser.Thf_atomContext) c);
@@ -360,14 +368,14 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
        //     }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_logic_formulaContext")) {
                 f = visitThfLogicFormula((TptpParser.Thf_logic_formulaContext) c);
-                if (f.formula.startsWith("(")) {
-                    f.formula = f.formula;
+                if (f.sumo.trim().startsWith("("))
                     f.sumo = f.sumo;
-                }
-                else {
-                    f.formula = "(" + f.formula + ")";
+                else
                     f.sumo = "(" + f.sumo + ")";
-                }
+                if (f.formula.trim().startsWith("("))
+                    f.formula = f.formula;
+                else
+                    f.formula = "(" + f.formula + ")";
             }
         }
         if (debug) System.out.println("visitThfUnitaryFormula() returning: " + f);
@@ -388,6 +396,11 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitThfOrFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_unitary_formulaContext")) {
                 TPTPFormula newf = visitThfUnitaryFormula((TptpParser.Thf_unitary_formulaContext) c);
+                if (newf.sumo.startsWith("(or")) {
+                    int start = newf.sumo.indexOf("(",2);
+                    int end = newf.sumo.trim().length() - 1;
+                    newf.sumo = newf.sumo.substring(start,end);
+                }
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
                     f.sumo = newf.sumo;
@@ -402,6 +415,11 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_or_formulaContext")) {
                 TPTPFormula newf = visitThfOrFormula((TptpParser.Thf_or_formulaContext) c);
+                if (newf.sumo.startsWith("(or")) {
+                    int start = newf.sumo.indexOf("(",2);
+                    int end = newf.sumo.trim().length() - 1;
+                    newf.sumo = newf.sumo.substring(start,end);
+                }
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
                     f.sumo = newf.sumo;
@@ -433,6 +451,11 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitThfAndFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_unitary_formulaContext")) {
                 TPTPFormula newf = visitThfUnitaryFormula((TptpParser.Thf_unitary_formulaContext) c);
+                if (newf.sumo.startsWith("(and")) {
+                    int start = newf.sumo.indexOf("(",2);
+                    int end = newf.sumo.trim().length() - 1;
+                    newf.sumo = newf.sumo.substring(start,end);
+                }
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
                     f.sumo = newf.sumo;
@@ -447,6 +470,11 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_and_formulaContext")) {
                 TPTPFormula newf = visitThfAndFormula((TptpParser.Thf_and_formulaContext) c);
+                if (newf.sumo.startsWith("(and")) {
+                    int start = newf.sumo.indexOf("(",2);
+                    int end = newf.sumo.trim().length() - 1;
+                    newf.sumo = newf.sumo.substring(start,end);
+                }
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
                     f.sumo = newf.sumo;
@@ -713,13 +741,14 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_unitary_formulaContext")) {
                 TPTPFormula newf = visitThfUnitaryFormula((TptpParser.Thf_unitary_formulaContext) c);
                 f.formula = f.formula + newf.formula;
-                f.sumo = f.sumo + newf.sumo + ")";
+                f.sumo = f.sumo + newf.sumo;
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_quantificationContext")) {
                 f = visitThfQuantification((TptpParser.Thf_quantificationContext) c);
             }
         }
-        if (debug) System.out.println("visitThfQuantifiedFormula() returning: " + f);
+        if (debug) System.out.println("visitThfQuantifiedFormula() returning thf: " + f);
+        if (debug) System.out.println("visitThfQuantifiedFormula() returning sumo: " + f.sumo);
         return f;
     }
 
@@ -734,7 +763,7 @@ public class THFVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitThfQuantification() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_variable_listContext")) {
                 TPTPFormula newf = visitThfVariableList((TptpParser.Thf_variable_listContext) c);
-                f.formula = f.formula + "[" + newf.formula + "]";
+                f.formula = f.formula + "[" + newf.formula + "]:";
                 f.sumo = f.sumo + "(" + newf.sumo + ") ";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_quantifierContext")) {
