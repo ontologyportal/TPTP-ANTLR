@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class THFVisitor extends AbstractParseTreeVisitor<String> {
 
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     /** ***************************************************************
      * thf_formula : thf_logic_formula | thf_sequent;   // no use of thf_sequent for SUMO
