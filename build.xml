@@ -1,11 +1,13 @@
 <project name="TPTP" default="all" basedir=".">
 
+<property name="app.name" value="tptpAntlr"/>
+<property name="build.home" value="build"/>
+<property name="build.classes" value="${build.home}/classes"/>
+<property name="build.lib" value="${build.home}/lib"/>
+<property environment="env"/>
+<property name="build.test.classes" value="${build.home}/test-classes"/>
+
 <target name="init">
-  <property name="app.name" value="tptpAntlr"/>
-  <property name="build.home" value="build"/>
-  <property name="build.classes" value="${build.home}/classes"/>
-  <property name="build.lib" value="${build.home}/lib"/>
-  <property environment="env"/>
   <property name="sigmakee.home" value="${env.SIGMA_SRC}" />
   <echo>Java Version via Ant: ${ant.java.version}</echo>
   <echo>Java Version System Prop: ${java.version}</echo>
@@ -28,7 +30,6 @@
 
 <path id="core.sourcepath">
     <pathelement path="src/java"/>
-    <pathelement path="test/src/main/java"/>
 </path>
 
 <path id="compile.classpath">
@@ -37,8 +38,39 @@
     </fileset>
 </path>
 
+<path id="test.sourcepath">
+    <pathelement path="test/src/main/java"/>
+</path>
+
+<path id="classpath.test">
+    <fileset dir="${basedir}/lib">
+        <include name="*.jar"/>
+    </fileset>
+    <pathelement location="${build.classes}"/>
+</path>
+
+<target name="test-compile" depends="compile">
+    <mkdir dir="${build.test.classes}"/>
+    <javac destdir="${build.test.classes}" includeantruntime="false">
+        <src refid="test.sourcepath"/>
+        <classpath refid="classpath.test"/>
+    </javac>
+</target>
+
+<target name="test" depends="test-compile">
+    <junit printsummary="on" haltonfailure="yes" fork="true">
+        <classpath>
+            <path refid="classpath.test"/>
+            <pathelement location="${build.test.classes}"/>
+        </classpath>
+        <formatter type="brief" usefile="false" />
+        <batchtest>
+            <fileset dir="test/src/main/java" includes="**/*Test.java" />
+        </batchtest>
+    </junit>
+</target>
 <!-- target name="all" depends="dist, api_doc" -->
-<target name="all" depends="compile">
+<target name="all" depends="compile, test">
     <jar destfile="${basedir}/tptp.jar">
         <fileset dir="${build.classes}"/>
     </jar>
