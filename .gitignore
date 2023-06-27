@@ -1,5 +1,7 @@
 .idea
 *.iml
+lib
+.ivy
 
 build/
 tptp.jar

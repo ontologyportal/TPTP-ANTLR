@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="org.ontologyportal" module="TPTP-ANTRL"/>
+    <dependencies>
+        <dependency org="org.antlr" name="antlr4" rev="4.9.3"/>
+        <dependency org="junit" name="junit" rev="4.12"/>
+    </dependencies>
+</ivy-module>
