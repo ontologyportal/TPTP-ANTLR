@@ -10,7 +10,7 @@
     <property name="app.name" value="tptpAntlr"/>
     <property name="build.home" value="build"/>
     <property name="build.classes" value="${build.home}/classes"/>
-    <property name="build.lib" value="${build.home}/lib"/>
+    <!--<property name="build.lib" value="${build.home}/lib"/>-->
     <property environment="env"/>
     <property name="build.test.classes" value="${build.home}/test-classes"/>
 
@@ -40,10 +40,6 @@
         <echo>Java Version via Ant: ${ant.java.version}</echo>
         <echo>Java Version System Prop: ${java.version}</echo>
 
-        <!-- avoid problems with package name changes by deleting everything -->
-        <delete includeemptydirs="true" failonerror="false">
-            <fileset dir="${build.home}"/>
-        </delete>
         <ant antfile="../SigmaUtils/build.xml" inheritAll="false" target="all"/>
         <copy todir="${basedir}/lib" file="../SigmaUtils/sigmaUtils.jar"/>
         <ivy:retrieve/>
@@ -55,9 +51,9 @@
                classpathref="compile.classpath">
             <src refid="core.sourcepath"/>
         </javac>
-        <copy todir="${build.lib}">
+<!--        <copy todir="${build.lib}">
             <fileset dir="${basedir}/lib"/>
-        </copy>
+        </copy>-->
     </target>
 
     <path id="core.sourcepath">
@@ -103,7 +99,7 @@
     </target>
 
     <!-- target name="all" depends="dist, api_doc" -->
-    <target name="all" depends="compile, test">
+    <target name="all" depends="clean,test">
         <jar destfile="${basedir}/tptp.jar">
             <fileset dir="${build.classes}"/>
         </jar>
@@ -111,6 +107,19 @@
             <format property="TODAY_US" pattern="yyyy-MM-dd HH:mm:ss:sss zzz" locale="en,US"/>
         </tstamp>
         <echo>the system date/time is ${TODAY_US}</echo>
+    </target>
+
+    <target name="clean" description="Delete old build, lib, dist aritifacts">
+        <delete includeemptydirs="true" failonerror="false">
+            <!-- avoid problems with package name changes by deleting everything -->
+            <fileset dir="${build.home}"/>
+        </delete>
+        <delete file="tptp.jar"/>
+        <delete includeemptydirs="true" failonerror="false"> <!-- keep local ivy lib up to date -->
+            <fileset dir="${basedir}/lib"> <!-- keep ./lib -->
+                <include name="*.jar"/>
+            </fileset>
+        </delete>
     </target>
 
 </project>
