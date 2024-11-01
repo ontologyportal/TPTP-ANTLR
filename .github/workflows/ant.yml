@@ -21,8 +21,8 @@ jobs:
     - name: checkout SigmaUtils
       uses: actions/checkout@v4
       with:
-#        repository: 'ontologyportal/SigmaUtils'
-        repository: 'terry-norbraten/SigmaUtils'
+        repository: 'ontologyportal/SigmaUtils'
+#        repository: 'terry-norbraten/SigmaUtils'
         ref: 'main'
 
     - name: Set up JDK 11
