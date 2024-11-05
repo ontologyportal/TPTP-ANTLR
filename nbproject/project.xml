@@ -13,12 +13,12 @@ auxiliary.show.customizer.message=<message>
             <properties/>
             <folders>
                 <source-folder>
-                    <label>src/java</label>
+                    <label>Source Packages</label>
                     <type>java</type>
                     <location>src/java</location>
                 </source-folder>
                 <source-folder>
-                    <label>test/src/main/java</label>
+                    <label>Test Packages</label>
                     <type>java</type>
                     <location>test/src/main/java</location>
                 </source-folder>
@@ -37,21 +37,21 @@ auxiliary.show.customizer.message=<message>
             <export>
                 <type>folder</type>
                 <location>build/classes</location>
-                <build-target>compile</build-target>
+                <build-target>all</build-target>
             </export>
             <export>
                 <type>folder</type>
                 <location>build/test-classes/tptp_parser</location>
-                <build-target>compile</build-target>
+                <build-target>all</build-target>
             </export>
             <view>
                 <items>
                     <source-folder style="packages">
-                        <label>src/java</label>
+                        <label>Source Packages</label>
                         <location>src/java</location>
                     </source-folder>
                     <source-folder style="packages">
-                        <label>test/src/main/java</label>
+                        <label>Test Packages</label>
                         <location>test/src/main/java</location>
                     </source-folder>
                     <source-file>
@@ -64,6 +64,7 @@ auxiliary.show.customizer.message=<message>
                     <ide-action name="test"/>
                 </context-menu>
             </view>
+            <subprojects/>
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
@@ -75,7 +76,7 @@ auxiliary.show.customizer.message=<message>
             <compilation-unit>
                 <package-root>test/src/main/java</package-root>
                 <unit-tests/>
-                <classpath mode="compile">build/classes:lib/antlr-runtime-3.5.2.jar:lib/antlr4-4.9.3.jar:lib/antlr4-runtime-4.9.3.jar:lib/hamcrest-core-1.3.jar:lib/icu4j-69.1.jar:lib/javax.json-1.0.4.jar:lib/junit-4.13.2.jar:lib/org.abego.treelayout.core-1.0.3.jar:lib/sigmaUtils.jar:lib/ST4-4.3.1.jar</classpath>
+                <classpath mode="compile">build/classes:lib/antlr-runtime-3.5.2.jar:lib/antlr4-4.9.3.jar:lib/antlr4-runtime-4.9.3.jar:lib/icu4j-69.1.jar:lib/javax.json-1.0.4.jar:lib/junit-4.13.2.jar:lib/org.abego.treelayout.core-1.0.3.jar:lib/sigmaUtils.jar:lib/ST4-4.3.1.jar</classpath>
                 <built-to>build/test-classes/tptp_parser</built-to>
                 <source-level>11</source-level>
             </compilation-unit>
