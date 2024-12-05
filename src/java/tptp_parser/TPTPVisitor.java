@@ -1,5 +1,6 @@
 package tptp_parser;
 
+import java.io.IOException;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -71,7 +72,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         try {
             inputStream = (CodePointCharStream) CharStreams.fromFileName(fname);
         }
-        catch (Exception e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
         TptpLexer tptpLexer = new TptpLexer(inputStream);
@@ -116,7 +117,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         visitor.visitFile(fileContext);
         HashMap<String,TPTPFormula> hm = visitor.result;
         result = hm;
-        if (hm == null || hm.values().size() == 0)
+        if (hm == null || hm.values().isEmpty())
             System.out.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
         return hm;
     }
@@ -139,7 +140,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         visitor.visitFile(fileContext);
         HashMap<String,TPTPFormula> hm = visitor.result;
         result = hm;
-        if (hm == null || hm.values().size() == 0)
+        if (hm == null || hm.values().isEmpty())
             System.out.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
         else {
             for (TPTPFormula f : hm.values()) {
@@ -158,18 +159,17 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         //if (debug) System.out.println("visitFile() Visiting file: " + context.getText());
         if (debug) System.out.println("visitFile() # children: " + context.children.size());
-        int counter = 0;
+//        int counter;
+        TPTPFormula f;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFile() child: " + c.getClass().getName());
             if (debug) System.out.println("visitFile() Visiting child: " + c.getText());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Tptp_inputContext")) {
-                TPTPFormula f = null;
                 f = visitInput((TptpParser.Tptp_inputContext) c);
             }
         }
         if (debug) System.out.println("visitFile() return file: " + result);
         if (debug) System.out.println();
-        return;
     }
 
     /** ***************************************************************
@@ -615,7 +615,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         if (debug) System.out.println("visitFofBinaryAssoc(): " + context.getText());
         TPTPFormula f = new TPTPFormula();
-        String conn = "";
+//        String conn = "";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryAssoc() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_or_formulaContext")) {
@@ -640,7 +640,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         if (debug) System.out.println("visitFofOrFormula(): " + context.getText());
         TPTPFormula f = new TPTPFormula();
-        String conn = "";
+//        String conn = "";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofOrFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
@@ -685,7 +685,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         if (debug) System.out.println("visitFofAndFormula(): " + context.getText());
         TPTPFormula f = new TPTPFormula();
-        String conn = "";
+//        String conn = "";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofAndFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
