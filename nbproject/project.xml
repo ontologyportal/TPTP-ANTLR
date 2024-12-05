@@ -69,7 +69,7 @@ auxiliary.show.customizer.message=<message>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src/java</package-root>
-                <classpath mode="compile">lib/antlr-runtime-3.5.2.jar:lib/antlr4-4.9.3.jar:lib/antlr4-runtime-4.9.3.jar:lib/icu4j-69.1.jar:lib/javax.json-1.0.4.jar:lib/org.abego.treelayout.core-1.0.3.jar:lib/sigmaUtils.jar:lib/ST4-4.3.1.jar</classpath>
+                <classpath mode="compile">lib/antlr4-4.9.3.jar:lib/antlr4-runtime-4.9.3.jar:lib/icu4j-69.1.jar:lib/javax.json-1.0.4.jar:lib/org.abego.treelayout.core-1.0.3.jar:lib/sigmaUtils.jar:lib/ST4-4.3.1.jar</classpath>
                 <built-to>build/classes</built-to>
                 <source-level>11</source-level>
             </compilation-unit>
