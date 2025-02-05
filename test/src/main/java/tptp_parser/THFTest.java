@@ -1,12 +1,11 @@
 package tptp_parser;
 
-import org.junit.Test;
-
-import java.util.*;
+import com.articulate.sigma.utils.*;
 
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import com.articulate.sigma.utils.*;
+import org.junit.Test;
+
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
