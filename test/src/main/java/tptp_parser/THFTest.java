@@ -45,7 +45,7 @@ public class THFTest {
         if (!StringUtil.emptyString(actualSUMO) && actualSUMO.equals(expectSUMO))
             System.out.println(label + " : Success on SUMO");
         else
-            System.out.println(label + " : fail on SUMO");
+            System.err.println(label + " : fail on SUMO");
 
         assertEquals(expectTHF, actualTHF);
         assertEquals(expectSUMO, actualSUMO);
