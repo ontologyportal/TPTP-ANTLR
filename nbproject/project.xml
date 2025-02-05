@@ -31,7 +31,11 @@ auxiliary.show.customizer.message=<message>
                     <target>test</target>
                 </action>
                 <action name="rebuild">
-                    <target>compile</target>
+                    <target>clean</target>
+                    <target>all</target>
+                </action>
+                <action name="clean">
+                    <target>clean</target>
                 </action>
             </ide-actions>
             <export>
@@ -61,6 +65,7 @@ auxiliary.show.customizer.message=<message>
                 <context-menu>
                     <ide-action name="build"/>
                     <ide-action name="rebuild"/>
+                    <ide-action name="clean"/>
                     <ide-action name="test"/>
                 </context-menu>
             </view>
