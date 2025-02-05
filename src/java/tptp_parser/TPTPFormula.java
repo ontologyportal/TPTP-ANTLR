@@ -1,9 +1,9 @@
 package tptp_parser;
 
-import com.articulate.sigma.utils.StringUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TPTPFormula {
 
@@ -13,8 +13,8 @@ public class TPTPFormula {
     public int id = 0; // ordered integer ids are used for proofs
     public String role = ""; // plain, axiom, type, etc
     public String type = ""; // fof, cnf, tff etc
-    public ArrayList<String> supports = new ArrayList<>();
-    public ArrayList<Integer> intsupports = new ArrayList<>();
+    public List<String> supports = new ArrayList<>();
+    public List<Integer> intsupports = new ArrayList<>();
     public String infRule = ""; // was just source
     public int startLine = 0;
     public int endLine = 0;
@@ -47,19 +47,21 @@ public class TPTPFormula {
 
     /** ***************************************************************
      */
+    @Override
     public String toString () {
 
-        StringBuffer result = new StringBuffer();
-        result.append(type + "(" + name + "," + role + "," + formula);
-        if (supports != null && supports.size() > 0) {
+        StringBuilder result = new StringBuilder();
+        result.append(type).append("(").append(name).append(",").append(role).append(",").append(formula);
+        if (supports != null && !supports.isEmpty()) {
             result.append(",[");
-            for (String f : supports)
-                result.append(f + ",");
+            for (String f : supports) {
+                result.append(f).append(",");
+            }
             result.deleteCharAt(result.length()-1);
             result.append("]");
         }
         if (infRule != "")
-            result.append(",[" + infRule + "]");
+            result.append(",[").append(infRule).append("]");
         result.append(")");
         return result.toString();
     }
@@ -83,18 +85,21 @@ public class TPTPFormula {
      * starting at 1.  Update the ArrayList of premises so that they
      * reflect the renumbering.
      */
-    public static ArrayList<TPTPFormula> normalizeProofStepNumbers(ArrayList<TPTPFormula> proofSteps) {
+    public static List<TPTPFormula> normalizeProofStepNumbers(List<TPTPFormula> proofSteps) {
 
         // old name, new number
-        HashMap<String,Integer> numberingMap = new HashMap<>();
+        Map<String,Integer> numberingMap = new HashMap<>();
 
         //if (debug) System.out.println("INFO in TPTPFormula.normalizeProofStepNumbers(): before: " + proofSteps);
         int newIndex = 1;
+        String premiseNum, oldIndex;
+        int newNumber;
+        TPTPFormula ps;
         for (int i = 0; i < proofSteps.size(); i++) {
             //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): numberingMap: " + numberingMap);
-            TPTPFormula ps = proofSteps.get(i);
+            ps = proofSteps.get(i);
             //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): Checking proof step: " + ps);
-            String oldIndex = ps.name;
+            oldIndex = ps.name;
             if (numberingMap.containsKey(oldIndex))
                 ps.id = numberingMap.get(oldIndex);
             else {
@@ -104,9 +109,8 @@ public class TPTPFormula {
                 newIndex++;
             }
             for (int j = 0; j < ps.supports.size(); j++) {
-                String premiseNum = ps.supports.get(j);
+                premiseNum = ps.supports.get(j);
                 //System.out.println("INFO in ProofStep.normalizeProofStepNumbers(): old premise num: " + premiseNum);
-                int newNumber = 0;
                 if (numberingMap.get(premiseNum) != null) {
                     newNumber = numberingMap.get(premiseNum);
                 }
