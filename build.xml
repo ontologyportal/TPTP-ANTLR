@@ -127,7 +127,7 @@
             </fileset>
             <report format="frames" todir="${reports.dir}/html"/>
         </junitreport>
-        <antcall target="open.junit.report"/>
+        <!--<antcall target="open.junit.report"/>-->
     </target>
     <target name="open.junit.report" depends="report.mac,report.unix"/>
     <target name="report.mac" unless="isUnixNotMac">
