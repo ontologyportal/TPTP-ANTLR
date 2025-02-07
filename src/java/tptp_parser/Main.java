@@ -16,16 +16,16 @@ public class Main {
                     String input = new String(Files.readAllBytes(f));
                     ParseContext pc = ThfAstGen.parse(input,"tptp_file","nname");
                     if (pc.error){
-                        System.out.println("ERR " + f.toString());
+                        System.err.println("ERR " + f.toString());
                     } else {
                         //System.out.println("SUC " + f.toString());
                     }
                 } catch (IOException e) {
-                    System.out.println("EIO " + f.toString());
+                    System.err.println("EIO " + f.toString());
                     e.printStackTrace();
                 }
                 catch (ParseException e) {
-                    System.out.println("Eparse" + f.toString());
+                    System.err.println("Eparse" + f.toString());
                     e.printStackTrace();
                 }
             });

@@ -1,12 +1,11 @@
 package tptp_parser;
 
-import org.junit.Test;
-
-import java.util.*;
+import com.articulate.sigma.utils.*;
 
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import com.articulate.sigma.utils.*;
+import org.junit.Test;
+
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
@@ -46,7 +45,7 @@ public class THFTest {
         if (!StringUtil.emptyString(actualSUMO) && actualSUMO.equals(expectSUMO))
             System.out.println(label + " : Success on SUMO");
         else
-            System.out.println(label + " : fail on SUMO");
+            System.err.println(label + " : fail on SUMO");
 
         assertEquals(expectTHF, actualTHF);
         assertEquals(expectSUMO, actualSUMO);

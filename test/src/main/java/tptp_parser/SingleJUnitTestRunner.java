@@ -28,8 +28,8 @@ public class SingleJUnitTestRunner {
             Result result = new JUnitCore().run(request);
             System.exit(result.wasSuccessful() ? 0 : 1);
         }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
+        catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
