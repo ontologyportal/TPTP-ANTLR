@@ -6,11 +6,10 @@
     <property name="ivy.jar.dir" value="${ivy.home}/lib"/>
     <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
 
-    <property name="app.name" value="tptpAntlr"/>
+    <property name="app.name" value="tptp"/>
     <property name="build.home" value="build"/>
     <property name="build.classes" value="${build.home}/classes"/>
     <property name="build.test.classes" value="${build.home}/test/classes"/>
-    <!--<property name="build.lib" value="${build.home}/lib"/>-->
     <property environment="env"/>
 
     <property name="javac.release" value="11"/>
@@ -62,9 +61,6 @@
                release="${javac.release}">
             <src refid="core.sourcepath"/>
         </javac>
-<!--        <copy todir="${build.lib}">
-            <fileset dir="${basedir}/lib"/>
-        </copy>-->
     </target>
 
     <path id="core.sourcepath">
@@ -149,11 +145,14 @@
     =====
     -->
 
-    <!-- target name="all" depends="dist, api_doc" -->
-    <target name="all" depends="clean,test">
-        <jar destfile="${basedir}/tptp.jar">
+    <target name="dist" depends="compile" description="Create the *.jar file">
+        <jar destfile="${basedir}/${app.name}.jar">
             <fileset dir="${build.classes}"/>
         </jar>
+    </target>
+
+    <!-- target name="all" depends="dist, api_doc" -->
+    <target name="all" depends="clean,dist">
         <tstamp>
             <format property="TODAY_US" pattern="yyyy-MM-dd HH:mm:ss:sss zzz" locale="en,US"/>
         </tstamp>
@@ -161,16 +160,16 @@
     </target>
 
     <target name="clean" description="Delete old build, lib, dist aritifacts">
+        <!-- avoid problems with package name changes by deleting everything -->
         <delete includeemptydirs="true" failonerror="false">
-            <!-- avoid problems with package name changes by deleting everything -->
             <fileset dir="${build.home}"/>
         </delete>
-        <delete file="tptp.jar"/>
         <delete includeemptydirs="true" failonerror="false"> <!-- keep local ivy lib up to date -->
             <fileset dir="${basedir}/lib"> <!-- keep ./lib -->
                 <include name="*.jar"/>
             </fileset>
         </delete>
+        <delete file="${app.name}.jar"/>
     </target>
 
 </project>

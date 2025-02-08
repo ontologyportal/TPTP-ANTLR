@@ -32,3 +32,6 @@ jobs:
 
     - name: Build with Ant
       run: ant
+
+    - name: Test with Ant
+      run: ant test
