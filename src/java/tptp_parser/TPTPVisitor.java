@@ -768,13 +768,13 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofUnaryFormula() child: " + c.getClass().getName());
+            if (c.getClass().getName().equals("tptp_parser.TptpParser$Unary_connectiveContext")) { // fix for issue #13
+                conn = ((TptpParser.Unary_connectiveContext) c).getText();
+            }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 f.formula = conn + newf.formula;
                 f.sumo = "(not " + newf.sumo + ")";
-            }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_binary_assocContext")) {
-                conn = ((TptpParser.Fof_binary_assocContext) c).getText();
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_infix_unaryContext")) {
                 f = CNFVisitor.visitFofInfixUnary((TptpParser.Fof_infix_unaryContext) c);
