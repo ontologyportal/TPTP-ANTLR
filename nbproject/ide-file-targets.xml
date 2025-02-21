@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="TPTP-IDE">
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#runsingle) -->
+
+    <!--
+    ========
+    TASKDEFs
+    ========
+    -->
+
+    <property file="nbproject/private/private.properties"/>
+    <import file="../build.xml"/>
+    <property file="nbproject/build.properties"/>
+
+    <path id="rcp">
+        <path path="${run.classpath}"/>
+    </path>
+    <path id="dcp">
+        <path path="${debug.classpath}"/>
+    </path>
+    <path id="tcp">
+        <path path="${run.test.classpath}"/>
+    </path>
+
+    <!--
+    ============
+    INIT SECTION
+    ============
+    -->
+
+    <target name="init" depends="init-ivy">
+        <mkdir dir="${reports.dir}"/>
+        <antcall target="${impl.title}.init"/>
+
+        <tstamp>
+            <format property="TODAY_US" pattern="EEE, d MMM yyyy HHmm Z" locale="en,US"/>
+        </tstamp>
+    </target>
+
+    <!--
+    ===========
+    RUN SECTION
+    ===========
+    -->
+
+    <target name="run" depends="compile" description="Performs a test run of SigmaUtils">
+        <java classname="${main.class}"
+              classpathref="rcp"
+              fork="true">
+            <jvmarg line="${run.jvmargs}"/>
+            <arg line="${run.args}"/>
+        </java>
+    </target>
+    <target name="run-selected-file-in-java" depends="compile">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <java classname="${run.class}"
+              failonerror="true"
+              classpathref="rcp"
+              fork="true">
+            <jvmarg line="${run.jvmargs}"/>
+            <arg line="${run.args}"/>
+        </java>
+    </target>
+
+    <!--
+    =============
+    DEBUG SECTION
+    =============
+    -->
+
+    <target name="debug-nb" depends="compile">
+        <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="dt_socket">
+            <classpath refid="dcp"/>
+        </nbjpdastart>
+        <!-- TODO configure the main class for your project here: -->
+        <java classname="${main.class}" fork="true">
+            <classpath refid="dcp"/>
+            <jvmarg value="-agentlib:jdwp=transport=dt_socket,address=${jpda.address}"/>
+            <arg line="${run.args}"/>
+        </java>
+    </target>
+    <target name="debug-selected-file-in-java" depends="compile">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
+            <classpath refid="dcp"/>
+        </nbjpdastart>
+        <java classname="${debug.class}"
+              classpathref="dcp"
+              fork="true">
+            <jvmarg value="-agentlib:jdwp=transport=${debug.transport},address=${jpda.address}"/>
+            <arg line="${run.args}"/>
+        </java>
+    </target>
+
+    <!--
+    ===================
+    RUN TASKS FOR TESTS
+    ===================
+    -->
+
+    <target name="run-selected-test-in-unit" depends="clean,test-compile">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <junit printsummary="yes"
+               haltonfailure="yes"
+               fork="yes"
+               showoutput="yes">
+            <jvmarg line="${run.jvmargs}"/>
+            <formatter type="plain" usefile="false"/>
+            <classpath>
+                <path refid="tcp"/>
+            </classpath>
+            <test name="${test.class}" haltonfailure="no" todir="${reports.dir}">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
+
+    <target name="run-single-test-method-in-unit" depends="clean,test-compile">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <junit printsummary="yes"
+               showoutput="yes"
+               fork="yes">
+            <jvmarg line="${run.jvmargs}"/>
+            <formatter type="plain" usefile="false"/>
+            <classpath>
+                <path refid="tcp"/>
+            </classpath>
+            <test name="${test.class}" methods="${method}" haltonfailure="no" todir="${reports.dir}">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
+
+    <!--
+    =====================
+    DEBUG TASKS FOR TESTS
+    =====================
+    -->
+
+    <target name="debug-single-test-method-in-unit" depends="clean,test-compile">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
+            <classpath refid="tcp"/>
+        </nbjpdastart>
+        <junit printsummary="yes"
+               showoutput="yes"
+               fork="yes">
+            <jvmarg value="-agentlib:jdwp=transport=${debug.transport},address=${jpda.address}"/>
+            <jvmarg line="${run.jvmargs}"/>
+            <formatter type="plain" usefile="false"/>
+            <classpath>
+                <path refid="tcp"/>
+            </classpath>
+            <test name="${test.class}" methods="${method}" haltonfailure="no" todir="${reports.dir}">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
+
+    <!--
+    ================
+    GEN TPTP GRAMMAR
+    ================
+    -->
+
+    <target name="gen.tptp.grammar" description="Generates the TPTP grammar based on the ${grammar.file}">
+        <delete dir="src/java/test"/>
+        <!-- can also use antlr task -->
+        <java classname="org.antlr.v4.Tool"
+              fork="true">
+            <classpath>
+                <pathelement location="lib/antlr4-4.9.3.jar"/>
+                <pathelement location="lib/antlr4-runtime-4.9.3.jar"/>
+                <pathelement location="lib/antlr-runtime-3.5.2.jar"/>
+                <pathelement location="lib/ST4-4.3.1.jar"/>
+            </classpath>
+            <arg line="${antlr.args}"/>
+        </java>
+        <copy todir="${src.dir}/tptp_parser">
+            <fileset dir="${copy.from.dir}" includes="*.java"/>
+        </copy>
+        <delete dir="src/java/test"/>
+    </target>
+
+    <!--
+    =====
+    ADMIN
+    =====
+    -->
+
+    <target name="dist" depends="compile" description="Create the ${dist.jar} file and place in ${dist.dir}.">
+        <manifest file="${manifest.mf}">
+            <attribute name="Built-By" value="${my.name} ${my.email}"/>
+            <attribute name="Specification-Title"
+                       value="${product.Name}"/>
+            <attribute name="Specification-Version"
+                       value="${product.version.major}.${product.version.minor}"/>
+            <attribute name="Specification-Vendor"
+                       value="${spec.vendor}"/>
+            <attribute name="Implementation-Title"
+                       value="${product.Name}"/>
+            <attribute name="Implementation-Version"
+                       value="${product.Version} built on ${TODAY_US}"/>
+            <attribute name="Implementation-Vendor"
+                       value="${nps}, ${moves.institute}, ${savage.research.group}"/>
+            <attribute name="Implementation-URL"
+                       value="${sumo.url}"/>
+            <attribute name="Implementation-Vendor-Id"
+                       value="${impl.vendor.id}"/>
+            <attribute name="Main-Class"
+                       value="${main.class}"/>
+        </manifest>
+        <jar destfile="${dist.jar}"
+             basedir="${build.classes}"
+             manifest="${manifest.mf}">
+            <metainf file="${project.license}"/>
+        </jar>
+        <copy todir="${basedir}" file="${dist.jar}"/> <!-- For SigmaKEE -->
+    </target>
+    <target name="clean" depends="TPTP.clean" description="Delete old build, lib contents">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${dist.dir}"/>
+        </delete>
+    </target>
+    <target name="all" depends="clean,dist">
+        <echo message="System date/time is: ${TODAY_US}"/>
+    </target>
+</project>
+

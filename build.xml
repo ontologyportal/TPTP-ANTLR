@@ -86,9 +86,13 @@
 
     <target name="test-compile" depends="compile">
         <mkdir dir="${build.test.classes}"/>
-        <javac destdir="${build.test.classes}" includeantruntime="false">
+        <javac destdir="${build.test.classes}"
+               debug="on"
+               optimize="on"
+               deprecation="on"
+               includeantruntime="false"
+               classpathref="classpath.test">
             <src refid="test.sourcepath"/>
-            <classpath refid="classpath.test"/>
         </javac>
         <mkdir dir="${reports.dir}"/>
     </target>
