@@ -212,7 +212,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                 f = visitCNFSent((TptpParser.Cnf_annotatedContext) c);
             if (f != null) {
                 f.startLine = context.getStart().getLine();
-                f.startLine = context.getStop().getLine();
+                f.endLine = context.getStop().getLine(); // 2/19/25 tdn
                 f.sourceFile = context.start.getTokenSource().getSourceName();
             }
         }
@@ -793,6 +793,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         if (debug) System.out.println("visitFofQuantifiedFormula(): " + context.getText());
         TPTPFormula f = new TPTPFormula();
         TPTPFormula newf;
+        String quant;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofQuantifiedFormula() child: " + c.getClass().getName());
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
@@ -801,7 +802,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                 f.sumo = f.sumo + newf.sumo + ")";
             }
             if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_quantifierContext")) {
-                String quant = ((TptpParser.Fof_quantifierContext) c).getText();
+                quant = ((TptpParser.Fof_quantifierContext) c).getText();
                 f.formula = quant;
                 f.sumo = "(" + sumoTable.get(quant);
             }
