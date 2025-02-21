@@ -60,7 +60,7 @@ public class TPTPFormula {
             result.deleteCharAt(result.length()-1);
             result.append("]");
         }
-        if (infRule != "")
+        if (!"".equals(infRule))
             result.append(",[").append(infRule).append("]");
         result.append(")");
         return result.toString();

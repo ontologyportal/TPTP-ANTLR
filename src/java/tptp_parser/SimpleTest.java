@@ -19,7 +19,7 @@ public class SimpleTest {
     public static void main(String[] args) throws Exception {
 
         // create a CharStream that reads from standard input
-        CodePointCharStream input = CharStreams.fromString(input2);
+        CodePointCharStream input = CharStreams.fromString(inputString);
         // create a lexer that feeds off of input CharStream
         TptpLexer lexer = new TptpLexer(input);
         // create a buffer of tokens pulled from the lexer
@@ -27,6 +27,16 @@ public class SimpleTest {
         // create a parser that feeds off the tokens buffer
         TptpParser parser = new TptpParser(tokens);
         ParseTree tree = parser.annotated_formula(); // begin parsing at init rule
+        System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+
+        input = CharStreams.fromString(input2);
+        // create a lexer that feeds off of input CharStream
+        lexer = new TptpLexer(input);
+        // create a buffer of tokens pulled from the lexer
+        tokens = new CommonTokenStream(lexer);
+        // create a parser that feeds off the tokens buffer
+        parser = new TptpParser(tokens);
+        tree = parser.annotated_formula(); // begin parsing at init rule
         System.out.println(tree.toStringTree(parser)); // print LISP-style tree
     }
 }

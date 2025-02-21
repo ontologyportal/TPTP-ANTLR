@@ -10,7 +10,7 @@ public class FileTest {
 
     public static void main(String[] args) throws Exception {
 
-        CodePointCharStream input = (CodePointCharStream) CharStreams.fromFileName(args[1]);
+        CodePointCharStream input = (CodePointCharStream) CharStreams.fromFileName(args[0]);
         // create a lexer that feeds off of input CharStream
         TptpLexer lexer = new TptpLexer(input);
         // create a buffer of tokens pulled from the lexer

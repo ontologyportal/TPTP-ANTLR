@@ -18,7 +18,7 @@ public class Main {
                     if (pc.error){
                         System.err.println("ERR " + f.toString());
                     } else {
-                        //System.out.println("SUC " + f.toString());
+                        System.out.println("SUC " + f.toString());
                     }
                 } catch (IOException e) {
                     System.err.println("EIO " + f.toString());
