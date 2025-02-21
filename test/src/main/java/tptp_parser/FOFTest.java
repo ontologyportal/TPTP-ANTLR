@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
-public class TPTPTest {
+public class FOFTest {
 
     /** ***************************************************************
      */
@@ -23,7 +23,7 @@ public class TPTPTest {
 
     /** ***************************************************************
      */
-    public void test(String input, String expectTPTP, String expectSUMO, String label) {
+    public void test(String input, String expectFOF, String expectSUMO, String label) {
 
         System.out.println("=============================");
         System.out.println("TPTPest: " + label);
@@ -31,13 +31,13 @@ public class TPTPTest {
         TPTPVisitor sv = new TPTPVisitor();
         sv.parseString(input);
 
-        String actualTPTP = sv.result.values().iterator().next().formula;
-        System.out.println("ActualTPTP:   " + actualTPTP);
-        System.out.println("ExpectTPTP: " + expectTPTP);
-        if (!StringUtil.emptyString(actualTPTP) && actualTPTP.equals(expectTPTP))
-            System.out.println(label + " : Success on THF");
+        String actualFOF = sv.result.values().iterator().next().formula;
+        System.out.println("ActualTPTP:   " + actualFOF);
+        System.out.println("ExpectTPTP: " + expectFOF);
+        if (!StringUtil.emptyString(actualFOF) && actualFOF.equals(expectFOF))
+            System.out.println(label + " : Success on FOF");
         else
-            System.err.println(label + " : fail on THF");
+            System.err.println(label + " : fail on FOF");
 
         String actualSUMO = sv.result.values().iterator().next().sumo;
         System.out.println("ActualSUMO:   " + actualSUMO);
@@ -47,7 +47,7 @@ public class TPTPTest {
         else
             System.err.println(label + " : fail on SUMO");
 
-        assertEquals(expectTPTP, actualTPTP);
+        assertEquals(expectFOF, actualFOF);
         assertEquals(expectSUMO, actualSUMO);
     }
 
@@ -59,9 +59,9 @@ public class TPTPTest {
     public void testNegConj() {
 
         String line = "fof(f393,negated_conjecture,( ~? [X16] : s__instance(X16,s__Relation)), inference(negated_conjecture,[],[f392])).";
-        String expectTPTP = "(~?[X16] : s__instance(X16,s__Relation))";
+        String expectFOF = "(~?[X16] : s__instance(X16,s__Relation))";
         String expectSUMO = "(not (exists (?X16) (instance ?X16 Relation)))";
         String label = "testNegConj";
-        test(line,expectTPTP,expectSUMO,label);
+        test(line,expectFOF,expectSUMO,label);
     }
 }
