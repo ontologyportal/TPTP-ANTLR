@@ -10,7 +10,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     tptp_parser.THFTest.class,
-    tptp_parser.TPTPTest.class
+    tptp_parser.FOFTest.class
 })
 public class TptpParserTestSuite {
 
