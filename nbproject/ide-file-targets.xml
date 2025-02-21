@@ -164,6 +164,9 @@
     ================
     -->
 
+    <!-- When generating the grammar, set the name from tptp_v7_0_0_0 to tptp so that class naming
+         will be uniform to current grammar files
+    -->
     <target name="gen.tptp.grammar" description="Generates the TPTP grammar based on the ${grammar.file}">
         <delete dir="src/java/test"/>
         <!-- can also use antlr task -->
