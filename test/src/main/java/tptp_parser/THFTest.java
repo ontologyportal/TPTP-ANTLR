@@ -37,7 +37,7 @@ public class THFTest {
         if (!StringUtil.emptyString(actualTHF) && actualTHF.equals(expectTHF))
             System.out.println(label + " : Success on THF");
         else
-            System.out.println(label + " : fail on THF");
+            System.err.println(label + " : fail on THF");
 
         String actualSUMO = sv.result.values().iterator().next().sumo;
         System.out.println("ActualSUMO:   " + actualSUMO);
