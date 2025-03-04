@@ -159,9 +159,9 @@
     </target>
 
     <!--
-    ================
-    GEN TPTP GRAMMAR
-    ================
+    =========
+    UTILITIES
+    =========
     -->
 
     <!-- When generating the grammar, set the name from tptp_v7_0_0_0 to tptp so that class naming
