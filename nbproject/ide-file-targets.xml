@@ -99,7 +99,7 @@
     ===================
     -->
 
-    <target name="run-selected-test-in-unit" depends="clean,test-compile">
+    <target name="run-selected-test-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
                haltonfailure="yes"
@@ -116,7 +116,7 @@
         </junit>
     </target>
 
-    <target name="run-single-test-method-in-unit" depends="clean,test-compile">
+    <target name="run-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
                showoutput="yes"
@@ -138,7 +138,7 @@
     =====================
     -->
 
-    <target name="debug-single-test-method-in-unit" depends="clean,test-compile">
+    <target name="debug-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
             <classpath refid="tcp"/>
