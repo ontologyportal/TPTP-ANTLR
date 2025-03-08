@@ -164,8 +164,10 @@
     =========
     -->
 
-    <!-- When generating the grammar, set the name from tptp_v7_0_0_0 to tptp so that class naming
-         will be uniform to current grammar files
+    <!-- When generating the grammar, set the grammar name from tptp_v7_0_0_0 to
+         tptp so that class naming will be uniform to current grammar files in
+         the src path. Also, create a temp Tptp.g4 file to generate like named
+         src files.
     -->
     <target name="gen.tptp.grammar" description="Generates the TPTP grammar based on the ${grammar.file}">
         <!-- can also use antlr task -->
