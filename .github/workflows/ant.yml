@@ -36,6 +36,8 @@ jobs:
       run: ant
       working-directory: ./TPTP-ANTLR
 
-    - name: Test with Ant
+    - name: Prep ENV and run unit tests
       run: ant test
+      env:
+        ONTOLOGYPORTAL_GIT: ${{ github.workspace }}
       working-directory: ./TPTP-ANTLR
