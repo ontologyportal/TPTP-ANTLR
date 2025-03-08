@@ -99,6 +99,24 @@
     ===================
     -->
 
+    <target name="test.unit" depends="compile.test" description="Runs the UnitTestSuite">
+        <junit printsummary="on"
+               showoutput="yes"
+               haltonfailure="yes"
+               fork="true">
+            <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
+            <formatter type="plain" usefile="false"/>
+            <classpath>
+                <path refid="classpath.test"/>
+                <pathelement location="${build.test.classes}"/>
+            </classpath>
+            <test name="${unit.test.suite}" haltonfailure="no" todir="${reports.dir}">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+        <antcall target="junit.report"/>
+    </target>
     <target name="run-selected-test-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
@@ -116,7 +134,6 @@
             </test>
         </junit>
     </target>
-
     <target name="run-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
