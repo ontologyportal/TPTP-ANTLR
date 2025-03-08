@@ -26,7 +26,7 @@ public class FOFTest {
     public void test(String input, String expectFOF, String expectSUMO, String label) {
 
         System.out.println("=============================");
-        System.out.println("TPTPest: " + label);
+        System.out.println("FOFTest: " + label);
         System.out.println();
         TPTPVisitor sv = new TPTPVisitor();
         sv.parseString(input);
