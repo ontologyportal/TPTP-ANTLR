@@ -4,28 +4,24 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-
-import java.lang.reflect.InvocationTargetException;
-
-import java.lang.reflect.Method;
 import java.text.ParseException;
 
 public class ThfAstGen {
 
     /**
-     * parse ANTLRInputStream containing thf and return ast
+     * parse CharStream containing thf and return ast
      * @param inputStream ANTLRInputStream object
      * @param rule start parsing at this rule
+     * @param name the parse context name
      * @return ast
      * @throws ParseException if there is no such rule
      */
-    public static ParseContext parse(ANTLRInputStream inputStream, String rule, String name) throws ParseException {
+    public static ParseContext parse(CharStream inputStream, String rule, String name) throws ParseException {
 
         TptpLexer lexer = new TptpLexer(inputStream);
         lexer.removeErrorListeners(); // only for production
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         tokens.fill();
-
 
         TptpParser parser = new TptpParser(tokens);
         parser.removeErrorListeners(); // only for production
@@ -37,24 +33,29 @@ public class ThfAstGen {
         parser.setBuildParseTree(true);
         parser.setTokenStream(tokens);
 
-        // parsing starting from a rule requires invoking that rulename as parser method
+        // parsing starting from a rule requires invoking that rulename as a parser method
         ParserRuleContext parserRuleContext = null;
-        try {
-            Class<?> parserClass = parser.getClass();
-            Method method = parserClass.getMethod(rule, (Class<?>[]) null);
-            parserRuleContext = (ParserRuleContext) method.invoke(parser, (Object[]) null);
+//        try {
+//            Class<?> parserClass = parser.getClass();
+//            Method method = parserClass.getMethod(rule, (Class<?>[]) null);
+//            parserRuleContext = (ParserRuleContext) method.invoke(parser, (Object[]) null);
+//
+//        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
+//                InvocationTargetException e) {
+//            e.printStackTrace();
+//            throw new ParseException(e.getMessage(),0);
+//        } // the above or the below
 
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException e) {
-            e.printStackTrace();
+        try {
+            parserRuleContext = parser.tptp_file();
+        } catch (RecognitionException e) {
             throw new ParseException(e.getMessage(),0);
-        }        // the above or the below
+        } // the above or the below
 
         // create ast
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(treeListener, parserRuleContext);
+        ParseTreeWalker.DEFAULT.walk(treeListener, parserRuleContext);
 
-        // create and return test.src.main.java.tptp_parser.ParseContext
+        // create and return tptp_parser.ParseContext
         parseContext.parserRuleContext = parserRuleContext;
         parseContext.name = name;
         parseContext.error = treeListener.error;
@@ -65,11 +66,13 @@ public class ThfAstGen {
      * parse String containing thf and return ast
      * @param inputString String object
      * @param rule start parsing at this rule
+     * @param name the parse context name
      * @return ast
      * @throws ParseException if there is no such rule
      */
     public static ParseContext parse(String inputString, String rule, String name) throws ParseException {
-         return ThfAstGen.parse(new ANTLRInputStream(inputString), rule, name);
+        CodePointCharStream inputStream = (CodePointCharStream) CharStreams.fromString(inputString);
+        return ThfAstGen.parse(inputStream, rule, name);
     }
 
 }
