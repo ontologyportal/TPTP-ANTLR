@@ -84,7 +84,7 @@
         <pathelement location="${build.classes}"/>
     </path>
 
-    <target name="test-compile" depends="compile">
+    <target name="compile.test" depends="compile">
         <mkdir dir="${build.test.classes}"/>
         <javac destdir="${build.test.classes}"
                debug="on"
@@ -104,7 +104,7 @@
     -->
 
     <target name="test" depends="test.unit"/>
-    <target name="test.unit" depends="test-compile" description="Runs the UnitTestSuite">
+    <target name="test.unit" depends="compile.test" description="Runs the UnitTestSuite">
         <junit printsummary="on"
                showoutput="yes"
                haltonfailure="yes"
@@ -127,7 +127,7 @@
             </fileset>
             <report format="frames" todir="${reports.dir}/html"/>
         </junitreport>
-        <!--<antcall target="open.junit.report"/>-->
+        <antcall target="open.junit.report"/>
     </target>
     <target name="open.junit.report" depends="report.mac,report.unix"/>
     <target name="report.mac" unless="isUnixNotMac">
@@ -151,6 +151,7 @@
 
     <target name="dist" depends="compile" description="Create the *.jar file">
         <jar destfile="${basedir}/${app.name}.jar">
+            <metainf file="LICENSE"/>
             <fileset dir="${build.classes}"/>
         </jar>
     </target>

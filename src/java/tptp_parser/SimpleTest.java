@@ -18,6 +18,7 @@ public class SimpleTest {
 
     public static void main(String[] args) throws Exception {
 
+        System.out.println("INFO in SimpleTest.main()");
         // create a CharStream that reads from standard input
         CodePointCharStream input = CharStreams.fromString(inputString);
         // create a lexer that feeds off of input CharStream

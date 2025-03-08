@@ -11,7 +11,7 @@
 
     <property file="nbproject/private/private.properties"/>
     <import file="../build.xml"/>
-    <property file="nbproject/build.properties"/>
+    <property file="nbproject/project.properties"/>
 
     <path id="rcp">
         <path path="${run.classpath}"/>
@@ -99,13 +99,14 @@
     ===================
     -->
 
-    <target name="run-selected-test-in-unit" depends="clean,test-compile">
+    <target name="run-selected-test-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
                haltonfailure="yes"
                fork="yes"
                showoutput="yes">
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
@@ -116,12 +117,13 @@
         </junit>
     </target>
 
-    <target name="run-single-test-method-in-unit" depends="clean,test-compile">
+    <target name="run-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <junit printsummary="yes"
                showoutput="yes"
                fork="yes">
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
@@ -138,7 +140,7 @@
     =====================
     -->
 
-    <target name="debug-single-test-method-in-unit" depends="clean,test-compile">
+    <target name="debug-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
             <classpath refid="tcp"/>
@@ -148,6 +150,7 @@
                fork="yes">
             <jvmarg value="-agentlib:jdwp=transport=${debug.transport},address=${jpda.address}"/>
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
@@ -159,16 +162,17 @@
     </target>
 
     <!--
-    ================
-    GEN TPTP GRAMMAR
-    ================
+    =========
+    UTILITIES
+    =========
     -->
 
-    <!-- When generating the grammar, set the name from tptp_v7_0_0_0 to tptp so that class naming
-         will be uniform to current grammar files
+    <!-- When generating the grammar, set the grammar name from tptp_v7_0_0_0 to
+         tptp so that class naming will be uniform to current grammar files in
+         the src path. Also, create a temp Tptp.g4 file to generate like named
+         src files.
     -->
     <target name="gen.tptp.grammar" description="Generates the TPTP grammar based on the ${grammar.file}">
-        <delete dir="src/java/test"/>
         <!-- can also use antlr task -->
         <java classname="org.antlr.v4.Tool"
               fork="true">

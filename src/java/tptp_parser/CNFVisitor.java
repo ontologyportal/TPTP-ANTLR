@@ -572,13 +572,14 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
         System.out.println("CNFVisitor class");
         System.out.println("  options:");
         System.out.println("  -h - show this help screen");
+        System.out.println("  -f <fname> - parse the file");
     }
 
     /** ***************************************************************
      */
     public static void main(String[] args) {
 
-        System.out.println("INFO in TPTPVisitor.main()");
+        System.out.println("INFO in CNFVisitor.main()");
         if (args != null && args.length > 0 && args[0].equals("-h"))
             showHelp();
         else {
@@ -586,7 +587,7 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
             String kbName = KBmanager.getMgr().getPref("sumokbname");
             KB kb = KBmanager.getMgr().getKB(kbName); */
             if (args != null && args.length > 1 && args[0].equals("-f")) {
-                System.out.println("INFO in TPTPVisitor.main(): parse file: " + args[1]);
+                System.out.println("INFO in CNFVisitor.main(): parse file: " + args[1]);
                 TPTPVisitor sv = new TPTPVisitor();
                 sv.parseFile(args[1]);
                 Map<String,TPTPFormula> hm = sv.result;
@@ -595,7 +596,6 @@ public class CNFVisitor extends AbstractParseTreeVisitor<String> {
                     tf = hm.get(s);
                     if (tf.type.equals("cnf")) {
                         System.out.println(hm.get(s) + "\n");
-                        CNFVisitor cv = new CNFVisitor();
                     }
                 }
             }

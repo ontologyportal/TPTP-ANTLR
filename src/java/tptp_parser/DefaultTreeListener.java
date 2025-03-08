@@ -2,14 +2,12 @@ package tptp_parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-
 /**
- * default tree listener implementation
+ * Default TPTP AST listener implementation for TPTP parsing
  */
-public class DefaultTreeListener implements ParseTreeListener {
+public class DefaultTreeListener extends TptpBaseListener {
     boolean error = false;
 
     @Override
