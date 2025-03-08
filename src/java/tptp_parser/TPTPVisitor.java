@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.*;
+import org.antlr.v4.runtime.CharStream;
 
 public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
@@ -68,9 +69,9 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
      */
     public void parseFile(String fname) {
 
-        CodePointCharStream inputStream = null;
+        CharStream inputStream = null;
         try {
-            inputStream = (CodePointCharStream) CharStreams.fromFileName(fname);
+            inputStream = CharStreams.fromFileName(fname);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -86,9 +87,9 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
     public void parseFile(Reader r) {
 
-        CodePointCharStream inputStream = null;
+        CharStream inputStream = null;
         try {
-            inputStream = (CodePointCharStream) CharStreams.fromFileName(fname);
+            inputStream = CharStreams.fromFileName(fname);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +109,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public Map<String,TPTPFormula> parseString(String input) {
 
         if (debug) System.out.println("parseString(): " + input);
-        CodePointCharStream inputStream = CharStreams.fromString(input);
+        CharStream inputStream = CharStreams.fromString(input);
         TptpLexer tptpLexer = new TptpLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
         TptpParser tptpParser = new TptpParser(commonTokenStream);
@@ -131,7 +132,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public Map<String,TPTPFormula> parseFormula(TPTPFormula input) {
 
         if (debug) System.out.println(input);
-        CodePointCharStream inputStream = CharStreams.fromString(input.getFormula());
+        CharStream inputStream = CharStreams.fromString(input.getFormula());
         TptpLexer tptpLexer = new TptpLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
         TptpParser tptpParser = new TptpParser(commonTokenStream);
