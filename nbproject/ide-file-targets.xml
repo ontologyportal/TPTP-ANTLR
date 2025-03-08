@@ -11,7 +11,7 @@
 
     <property file="nbproject/private/private.properties"/>
     <import file="../build.xml"/>
-    <property file="nbproject/build.properties"/>
+    <property file="nbproject/project.properties"/>
 
     <path id="rcp">
         <path path="${run.classpath}"/>
@@ -106,6 +106,7 @@
                fork="yes"
                showoutput="yes">
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
@@ -122,6 +123,7 @@
                showoutput="yes"
                fork="yes">
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
@@ -148,6 +150,7 @@
                fork="yes">
             <jvmarg value="-agentlib:jdwp=transport=${debug.transport},address=${jpda.address}"/>
             <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
             <formatter type="plain" usefile="false"/>
             <classpath>
                 <path refid="tcp"/>
