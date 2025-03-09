@@ -71,7 +71,7 @@ public class ThfAstGen {
      * @throws ParseException if there is no such rule
      */
     public static ParseContext parse(String inputString, String rule, String name) throws ParseException {
-        CodePointCharStream inputStream = (CodePointCharStream) CharStreams.fromString(inputString);
+        CharStream inputStream = CharStreams.fromString(inputString);
         return ThfAstGen.parse(inputStream, rule, name);
     }
 
