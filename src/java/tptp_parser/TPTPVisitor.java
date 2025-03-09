@@ -131,6 +131,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     }
 
     private void parse_common(CharStream inputStream) {
+        
         TptpLexer tptpLexer = new TptpLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
         TptpParser tptpParser = new TptpParser(commonTokenStream);
