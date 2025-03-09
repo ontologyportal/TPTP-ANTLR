@@ -76,11 +76,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         catch (IOException e) {
             e.printStackTrace();
         }
-        TptpLexer tptpLexer = new TptpLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
-        TptpParser tptpParser = new TptpParser(commonTokenStream);
-        TptpParser.Tptp_fileContext fileContext = tptpParser.tptp_file();
-        visitFile(fileContext);
+        parse_common(inputStream);
     }
 
     /** ***************************************************************
@@ -94,11 +90,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         catch (Exception e) {
             e.printStackTrace();
         }
-        TptpLexer tptpLexer = new TptpLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
-        TptpParser tptpParser = new TptpParser(commonTokenStream);
-        TptpParser.Tptp_fileContext fileContext = tptpParser.tptp_file();
-        visitFile(fileContext);
+        parse_common(inputStream);
     }
 */
 
@@ -110,13 +102,8 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         if (debug) System.out.println("parseString(): " + input);
         CharStream inputStream = CharStreams.fromString(input);
-        TptpLexer tptpLexer = new TptpLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
-        TptpParser tptpParser = new TptpParser(commonTokenStream);
-        TptpParser.Tptp_fileContext fileContext = tptpParser.tptp_file();
-        TPTPVisitor visitor = new TPTPVisitor();
-        visitor.visitFile(fileContext);
-        Map<String,TPTPFormula> hm = visitor.result;
+        parse_common(inputStream);
+        Map<String,TPTPFormula> hm = this.result;
         result = hm;
         if (hm == null || hm.values().isEmpty())
             System.err.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
@@ -132,25 +119,23 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public Map<String,TPTPFormula> parseFormula(TPTPFormula input) {
 
         if (debug) System.out.println(input);
-        CharStream inputStream = CharStreams.fromString(input.getFormula());
-        TptpLexer tptpLexer = new TptpLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
-        TptpParser tptpParser = new TptpParser(commonTokenStream);
-        TptpParser.Tptp_fileContext fileContext = tptpParser.tptp_file();
-        TPTPVisitor visitor = new TPTPVisitor();
-        visitor.visitFile(fileContext);
-        Map<String,TPTPFormula> hm = visitor.result;
+        Map<String,TPTPFormula> hm = parseString(input.getFormula());
         result = hm;
-        if (hm == null || hm.values().isEmpty())
-            System.err.println("Error in TPTPVisitor.parseString(): no results for input: "  + input);
-        else {
+        if (hm != null && !hm.values().isEmpty())
             for (TPTPFormula f : hm.values()) {
                 f.startLine = input.startLine;
                 f.endLine = input.endLine;
                 f.sourceFile = input.sourceFile;
             }
-        }
         return hm;
+    }
+
+    private void parse_common(CharStream inputStream) {
+        TptpLexer tptpLexer = new TptpLexer(inputStream);
+        CommonTokenStream commonTokenStream = new CommonTokenStream(tptpLexer);
+        TptpParser tptpParser = new TptpParser(commonTokenStream);
+        TptpParser.Tptp_fileContext fileContext = tptpParser.tptp_file();
+        visitFile(fileContext);
     }
 
     /** ***************************************************************
