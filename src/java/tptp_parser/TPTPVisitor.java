@@ -1,13 +1,13 @@
 package tptp_parser;
 
-import java.io.IOException;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.IOException;
 import java.util.*;
-import org.antlr.v4.runtime.CharStream;
 
 public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
