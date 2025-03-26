@@ -18,7 +18,7 @@ public class Main {
         System.out.println("TPTPVisitor class");
         System.out.println("  options:");
         System.out.println("  -h - show this help screen");
-        System.out.println("  -f <fname> - parse a thr file");
+        System.out.println("  -f <fname> - parse a thf file");
         System.out.println("  -p <pname> - parse a path of thf files");
     }
 
