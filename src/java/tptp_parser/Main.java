@@ -47,13 +47,13 @@ public class Main {
         return tv;
     }
 
-    private static void showResults(TPTPVisitor tv) {
+    public static void showResults(TPTPVisitor tv) {
 
         Map<String, TPTPFormula> hm = tv.result;
         StringBuilder sb = new StringBuilder();
         for (TPTPFormula f : hm.values())
-            sb.append(f.getFormula()).append("\n");
-        System.out.println("result: " + sb);
+            sb.append(f).append("\n");
+        System.out.println("result:\n" + sb);
     }
 
     /** ***************************************************************
