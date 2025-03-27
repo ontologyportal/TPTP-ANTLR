@@ -51,7 +51,6 @@ public class FOFTest {
         assertEquals(expectSUMO, actualSUMO);
     }
 
-
     /** ***************************************************************
      * Check for Issue #13
      */
