@@ -19,18 +19,9 @@ public class ParseTestCases {
         Path inPath = Paths.get(path);
         try (Stream<Path> paths = Files.walk(inPath)) {
             paths.filter(f -> f.toString().endsWith(".p")).sorted().forEach( f ->  {
-                try {
-                    ParseContext pc = ThfAstGen.parse(CharStreams.fromPath(f),"tptp_file","nname");
-                    System.out.println(pc.parserRuleContext.toStringTree());
-                    assertFalse(pc.error);
-                } catch (IOException e) {
-                    System.err.println("EIO " + f.toString());
-                    e.printStackTrace();
-                }
-                catch (java.text.ParseException e) {
-                    System.err.println("Eparse" + f.toString());
-                    e.printStackTrace();
-                }
+                TPTPVisitor tv = Main.process(f.toFile());
+                Main.showResults(tv);
+                assertFalse(tv.result.isEmpty());
             });
         }
     }

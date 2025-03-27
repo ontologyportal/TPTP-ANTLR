@@ -849,23 +849,18 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         System.out.println("INFO in TPTPVisitor.main()");
         if (args != null && args.length > 0 && args[0].equals("-h"))
             showHelp();
-        else {
-            /* KBmanager.getMgr().initializeOnce();
-            String kbName = KBmanager.getMgr().getPref("sumokbname");
-            KB kb = KBmanager.getMgr().getKB(kbName); */
-            if (args != null && args.length > 1 && args[0].equals("-f")) {
-                System.out.println("INFO in TPTPVisitor.main(): parse file: " + args[1]);
-                TPTPVisitor sv = new TPTPVisitor();
-                sv.parseFile(args[1]);
-                Map<String,TPTPFormula> hm = sv.result;
-                for (String s : hm.keySet()) {
-                    System.out.println(hm.get(s));
-                    System.out.println("\t" + hm.get(s).sumo + "\n");
-                }
+        else if (args != null && args.length > 1 && args[0].equals("-f")) {
+            System.out.println("INFO in TPTPVisitor.main(): parse file: " + args[1]);
+            TPTPVisitor sv = new TPTPVisitor();
+            sv.parseFile(args[1]);
+            Map<String,TPTPFormula> hm = sv.result;
+            for (String s : hm.keySet()) {
+                System.out.println(hm.get(s));
+                System.out.println("\t" + hm.get(s).sumo + "\n");
             }
-            else
-                showHelp();
         }
+        else
+            showHelp();
     }
 }
 
