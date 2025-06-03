@@ -9,8 +9,8 @@
     ========
     -->
 
-    <property file="nbproject/private/private.properties"/>
     <import   file="../build.xml"/>
+    <property file="nbproject/private/private.properties"/>
     <property file="nbproject/project.properties"/>
 
     <path id="rcp">
