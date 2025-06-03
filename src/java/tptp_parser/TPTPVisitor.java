@@ -573,9 +573,8 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public static TPTPFormula visitFofBinaryNonassoc(TptpParser.Fof_binary_nonassocContext context) {
 
         if (debug) System.out.println("visitFofBinaryNonassoc(): " + context.getText());
-        TPTPFormula f = new TPTPFormula();
+        TPTPFormula f = new TPTPFormula(),newf;
         String conn = "";
-        TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryNonassoc() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Fof_unitary_formulaContext) {
@@ -605,7 +604,6 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 
         if (debug) System.out.println("visitFofBinaryAssoc(): " + context.getText());
         TPTPFormula f = new TPTPFormula();
-//        String conn = "";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryAssoc() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Fof_or_formulaContext) {
@@ -629,9 +627,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public static TPTPFormula visitFofOrFormula(TptpParser.Fof_or_formulaContext context) {
 
         if (debug) System.out.println("visitFofOrFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula();
-//        String conn = "";
-        TPTPFormula newf;
+        TPTPFormula f = new TPTPFormula(), newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofOrFormula() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Fof_unitary_formulaContext) {
@@ -675,9 +671,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public static TPTPFormula visitFofAndFormula(TptpParser.Fof_and_formulaContext context) {
 
         if (debug) System.out.println("visitFofAndFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula();
-//        String conn = "";
-        TPTPFormula newf;
+        TPTPFormula f = new TPTPFormula(), newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofAndFormula() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Fof_unitary_formulaContext) {
@@ -749,9 +743,8 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public static TPTPFormula visitFofUnaryFormula(TptpParser.Fof_unary_formulaContext context) {
 
         if (debug) System.out.println("visitFofUnaryFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula();
+        TPTPFormula f = new TPTPFormula(), newf;
         String conn = "";
-        TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofUnaryFormula() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Unary_connectiveContext) { // fix for issue #13
@@ -777,8 +770,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
     public static TPTPFormula visitFofQuantifiedFormula(TptpParser.Fof_quantified_formulaContext context) {
 
         if (debug) System.out.println("visitFofQuantifiedFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula();
-        TPTPFormula newf;
+        TPTPFormula f = new TPTPFormula(), newf;
         String quant;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofQuantifiedFormula() child: " + c.getClass().getName());
