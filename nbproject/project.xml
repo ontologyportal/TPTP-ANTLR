@@ -115,6 +115,19 @@ auxiliary.show.customizer.message=<message>
                         </arity>
                     </context>
                 </action>
+                <action name="debug.test.single">
+                    <script>${ant.script}</script>
+                    <target>debug-selected-test-in-unit</target>
+                    <context>
+                        <property>test.class</property>
+                        <folder>test/src/main/java</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
                 <action name="debug.single.method">
                     <script>${ant.script}</script>
                     <target>debug-single-test-method-in-unit</target>

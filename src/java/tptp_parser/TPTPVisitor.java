@@ -150,7 +150,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFile() child: " + c.getClass().getName());
             if (debug) System.out.println("visitFile() Visiting child: " + c.getText());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Tptp_inputContext")) {
+            if (c instanceof TptpParser.Tptp_inputContext) {
                 f = visitInput((TptpParser.Tptp_inputContext) c);
             }
         }
@@ -169,7 +169,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitInput() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Annotated_formulaContext"))
+            if (c instanceof TptpParser.Annotated_formulaContext)
                 f = visitFormula((TptpParser.Annotated_formulaContext) c);
         }
         return f;
@@ -188,13 +188,13 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug)  System.out.println("visitFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Tff_annotatedContext"))
+            if (c instanceof TptpParser.Tff_annotatedContext)
                 f = visitTFFSent((TptpParser.Tff_annotatedContext) c);
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_annotatedContext"))
+            if (c instanceof TptpParser.Thf_annotatedContext)
                 f = visitTHFSent((TptpParser.Thf_annotatedContext) c);
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_annotatedContext"))
+            if (c instanceof TptpParser.Fof_annotatedContext)
                 f = visitFOFSent((TptpParser.Fof_annotatedContext) c);
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Cnf_annotatedContext"))
+            if (c instanceof TptpParser.Cnf_annotatedContext)
                 f = visitCNFSent((TptpParser.Cnf_annotatedContext) c);
             if (f != null) {
                 f.startLine = context.getStart().getLine();
@@ -221,14 +221,14 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         f.type = "tff";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitTFFSent() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+            if (c instanceof TptpParser.NameContext)
                 f.name = ((TptpParser.NameContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Formula_roleContext"))
+            if (c instanceof TptpParser.Formula_roleContext)
                 f.role = ((TptpParser.Formula_roleContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Tff_formulaContext")) {
+            if (c instanceof TptpParser.Tff_formulaContext) {
                 newf = TFFVisitor.visitTffFormula((TptpParser.Tff_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")) {
+            if (c instanceof TptpParser.AnnotationsContext) {
                 f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
                 f.supports = f2.supports;
                 f.infRule = f2.infRule;
@@ -255,15 +255,15 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         f.type = "thf";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitTHFSent() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+            if (c instanceof TptpParser.NameContext)
                 f.name = ((TptpParser.NameContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Formula_roleContext"))
+            if (c instanceof TptpParser.Formula_roleContext)
                 f.role = ((TptpParser.Formula_roleContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Thf_formulaContext")) {
+            if (c instanceof TptpParser.Thf_formulaContext) {
                 if (debug) System.out.println("visitTHFSent() found formula ");
                 newf = THFVisitor.visitThfFormula((TptpParser.Thf_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")) {
+            if (c instanceof TptpParser.AnnotationsContext) {
                 f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
                 f.supports = f2.supports;
                 f.infRule = f2.infRule;
@@ -290,16 +290,16 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf, f2;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFOFSent() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+            if (c instanceof TptpParser.NameContext)
                 f.name = ((TptpParser.NameContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Formula_roleContext"))
+            if (c instanceof TptpParser.Formula_roleContext)
                 f.role = ((TptpParser.Formula_roleContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_formulaContext")) {
+            if (c instanceof TptpParser.Fof_formulaContext) {
                 newf = visitFofFormula((TptpParser.Fof_formulaContext) c);
                 f.formula = newf.formula;
                 f.sumo = newf.sumo;
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")){
+            if (c instanceof TptpParser.AnnotationsContext){
                 f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
                 f.supports = f2.supports;
                 f.infRule = f2.infRule;
@@ -325,16 +325,16 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula cnf, f2;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitCNFSent() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+            if (c instanceof TptpParser.NameContext)
                 f.name = ((TptpParser.NameContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Formula_roleContext"))
+            if (c instanceof TptpParser.Formula_roleContext)
                 f.role = ((TptpParser.Formula_roleContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Cnf_formulaContext")) {
+            if (c instanceof TptpParser.Cnf_formulaContext) {
                 cnf = CNFVisitor.visitCNFFormula((TptpParser.Cnf_formulaContext) c);
                 f.formula = cnf.formula;
                 f.sumo = cnf.sumo;
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$AnnotationsContext")){
+            if (c instanceof TptpParser.AnnotationsContext){
                 f2 = visitAnnotations((TptpParser.AnnotationsContext) c);
                 f.supports = f2.supports;
                 f.infRule = f2.infRule;
@@ -353,7 +353,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitAnnotations() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$SourceContext"))
+            if (c instanceof TptpParser.SourceContext)
                 f = visitSource((TptpParser.SourceContext) c);
         }
         return f;
@@ -373,11 +373,11 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
             f.supports.add(context.Lower_word().toString());
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitSource() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Dag_sourceContext"))
+            if (c instanceof TptpParser.Dag_sourceContext)
                 f = visitDagSource((TptpParser.Dag_sourceContext) c);
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Internal_sourceContext"))
+            if (c instanceof TptpParser.Internal_sourceContext)
                 f = visitInternalSource((TptpParser.Internal_sourceContext) c);
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$External_sourceContext"))
+            if (c instanceof TptpParser.External_sourceContext)
                 f = visitExternalSource((TptpParser.External_sourceContext) c);
         }
         if (debug) System.out.println("visitSource() returning: " + f);
@@ -393,9 +393,9 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitDagSource() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$NameContext"))
+            if (c instanceof TptpParser.NameContext)
                 f.supports.add(((TptpParser.NameContext) c).getText());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Inference_recordContext"))
+            if (c instanceof TptpParser.Inference_recordContext)
                 f = visitInferenceRecordSource((TptpParser.Inference_recordContext) c);
         }
         if (debug) System.out.println("visitDagSource() returning: " + f);
@@ -411,7 +411,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitInternalSource() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Intro_typeContext"))
+            if (c instanceof TptpParser.Intro_typeContext)
                 f.infRule = ((TptpParser.Intro_typeContext) c).getText();
         }
         if (debug) System.out.println("visitInternalSource() returning: " + f);
@@ -427,11 +427,11 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitExternalSource() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$File_sourceContext"))
+            if (c instanceof TptpParser.File_sourceContext)
                 f.infRule = ((TptpParser.File_sourceContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$TheoryContext"))
+            if (c instanceof TptpParser.TheoryContext)
                 f.infRule = ((TptpParser.TheoryContext) c).getText();
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Creator_sourceContext"))
+            if (c instanceof TptpParser.Creator_sourceContext)
                 f.infRule = ((TptpParser.Creator_sourceContext) c).getText();
         }
         if (debug) System.out.println("visitExternalSource() returning: " + f);
@@ -446,9 +446,9 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitInferenceRecordSource() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Inference_ruleContext"))
+            if (c instanceof TptpParser.Inference_ruleContext)
                 f.infRule = (((TptpParser.Inference_ruleContext) c).getText());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Inference_parentsContext"))
+            if (c instanceof TptpParser.Inference_parentsContext)
                 f.supports = visitInferenceParents((TptpParser.Inference_parentsContext) c).supports;
         }
         if (debug) System.out.println("visitInferenceRecordSource() returning: " + f);
@@ -464,7 +464,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitInferenceParents() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Parent_listContext")) {
+            if (c instanceof TptpParser.Parent_listContext) {
                 f.supports.addAll(visitParentList((TptpParser.Parent_listContext) c).supports);
                 if (debug) System.out.println("visitInferenceParents() f: " + f);
             }
@@ -482,7 +482,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitParentList() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Parent_infoContext"))
+            if (c instanceof TptpParser.Parent_infoContext)
                 f.supports.addAll(visitParentInfo((TptpParser.Parent_infoContext) c).supports);
         }
         if (debug) System.out.println("visitParentList() returning: " + f);
@@ -498,7 +498,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitParentInfo() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$SourceContext")) {
+            if (c instanceof TptpParser.SourceContext) {
                 f.supports.add(((TptpParser.SourceContext) c).getText());
                 if (debug) System.out.println("visitParentInfo() f: " + f);
             }
@@ -516,7 +516,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_logic_formulaContext")) {
+            if (c instanceof TptpParser.Fof_logic_formulaContext) {
                 f = visitFofLogicFormula((TptpParser.Fof_logic_formulaContext) c);
             }
         }
@@ -534,10 +534,10 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofLogicFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_binary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_binary_formulaContext) {
                 f = visitFofBinaryFormula((TptpParser.Fof_binary_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 f = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
             }
         }
@@ -555,10 +555,10 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_binary_nonassocContext")) {
+            if (c instanceof TptpParser.Fof_binary_nonassocContext) {
                 f = visitFofBinaryNonassoc((TptpParser.Fof_binary_nonassocContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_binary_assocContext")) {
+            if (c instanceof TptpParser.Fof_binary_assocContext) {
                 f = visitFofBinaryAssoc((TptpParser.Fof_binary_assocContext) c);
             }
         }
@@ -578,7 +578,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryNonassoc() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
@@ -589,7 +589,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                     f.sumo = "(" + conn + " " + f.sumo + " " + newf.sumo + ")";
                 }
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Binary_connectiveContext")) {
+            if (c instanceof TptpParser.Binary_connectiveContext) {
                 conn = ((TptpParser.Binary_connectiveContext) c).getText();
             }
         }
@@ -608,11 +608,11 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
 //        String conn = "";
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofBinaryAssoc() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_or_formulaContext")) {
+            if (c instanceof TptpParser.Fof_or_formulaContext) {
                 f = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
                 f.sumo = f.sumo + ")";
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_and_formulaContext")) {
+            if (c instanceof TptpParser.Fof_and_formulaContext) {
                 f = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
                 f.sumo = f.sumo + ")";
             }
@@ -634,7 +634,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofOrFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
@@ -648,7 +648,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                         f.sumo = "(or " + f.sumo + " " + newf.sumo;
                 }
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_or_formulaContext")) {
+            if (c instanceof TptpParser.Fof_or_formulaContext) {
                 newf = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
@@ -680,7 +680,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofAndFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
@@ -694,7 +694,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
                         f.sumo = "(and " + f.sumo + " " + newf.sumo;
                 }
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_and_formulaContext")) {
+            if (c instanceof TptpParser.Fof_and_formulaContext) {
                 newf = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
                 if (f.formula.equals("")) {
                     f.formula = newf.formula;
@@ -724,16 +724,16 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula f = new TPTPFormula();
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofUnitaryFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_quantified_formulaContext")) {
+            if (c instanceof TptpParser.Fof_quantified_formulaContext) {
                 f = visitFofQuantifiedFormula((TptpParser.Fof_quantified_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unary_formulaContext) {
                 f = visitFofUnaryFormula((TptpParser.Fof_unary_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_atomic_formulaContext")) {
+            if (c instanceof TptpParser.Fof_atomic_formulaContext) {
                 f = CNFVisitor.visitFofAtomicFormula((TptpParser.Fof_atomic_formulaContext) c);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_logic_formulaContext")) {
+            if (c instanceof TptpParser.Fof_logic_formulaContext) {
                 f = visitFofLogicFormula((TptpParser.Fof_logic_formulaContext) c);
                 f.formula = "(" + f.formula + ")";
             }
@@ -754,15 +754,15 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         TPTPFormula newf;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofUnaryFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Unary_connectiveContext")) { // fix for issue #13
+            if (c instanceof TptpParser.Unary_connectiveContext) { // fix for issue #13
                 conn = ((TptpParser.Unary_connectiveContext) c).getText();
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 f.formula = conn + newf.formula;
                 f.sumo = "(not " + newf.sumo + ")";
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_infix_unaryContext")) {
+            if (c instanceof TptpParser.Fof_infix_unaryContext) {
                 f = CNFVisitor.visitFofInfixUnary((TptpParser.Fof_infix_unaryContext) c);
             }
         }
@@ -782,17 +782,17 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         String quant;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofQuantifiedFormula() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_unitary_formulaContext")) {
+            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
                 newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
                 f.formula = f.formula + newf.formula;
                 f.sumo = f.sumo + newf.sumo + ")";
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_quantifierContext")) {
+            if (c instanceof TptpParser.Fof_quantifierContext) {
                 quant = ((TptpParser.Fof_quantifierContext) c).getText();
                 f.formula = quant;
                 f.sumo = "(" + sumoTable.get(quant);
             }
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$Fof_variable_listContext")) {
+            if (c instanceof TptpParser.Fof_variable_listContext) {
                 newf = visitFofVariableList((TptpParser.Fof_variable_listContext) c);
                 f.formula = f.formula + "[" + newf.formula + "] : ";
                 f.sumo = f.sumo + " (" + newf.sumo + ") ";
@@ -813,7 +813,7 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
         String term, sumoTerm;
         for (ParseTree c : context.children) {
             if (debug) System.out.println("visitFofVariableList() child: " + c.getClass().getName());
-            if (c.getClass().getName().equals("tptp_parser.TptpParser$VariableContext")) {
+            if (c instanceof TptpParser.VariableContext) {
                 term = c.getText();
                 sumoTerm = translateSUMOterm(c.getText());
                 if (debug) System.out.println("visitFofInfixUnary() term: " + term);
