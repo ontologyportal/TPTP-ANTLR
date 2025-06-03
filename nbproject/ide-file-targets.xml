@@ -9,8 +9,8 @@
     ========
     -->
 
+    <import   file="../build.xml"/>
     <property file="nbproject/private/private.properties"/>
-    <import file="../build.xml"/>
     <property file="nbproject/project.properties"/>
 
     <path id="rcp">
@@ -24,9 +24,9 @@
     </path>
 
     <!--
-    ============
-    INIT SECTION
-    ============
+    ====
+    INIT
+    ====
     -->
 
     <target name="init" depends="init-ivy">
@@ -157,6 +157,24 @@
     =====================
     -->
 
+    <target name="debug-selected-test-in-unit" depends="clean,compile.test">
+        <fail unless="test.class">Must set property 'test.class'</fail>
+        <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
+            <classpath refid="tcp"/>
+        </nbjpdastart>
+        <junit printsummary="yes"
+               showoutput="yes"
+               fork="yes">
+            <jvmarg value="-agentlib:jdwp=transport=${debug.transport},address=${jpda.address}"/>
+            <jvmarg line="${run.jvmargs}"/>
+            <env key="ONTOLOGYPORTAL_GIT" value="${ontologyportal.git}"/>
+            <formatter type="plain" usefile="false"/>
+            <classpath refid="tcp"/>
+            <test name="${test.class}" haltonfailure="no" todir="${reports.dir}">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
     <target name="debug-single-test-method-in-unit" depends="clean,compile.test">
         <fail unless="test.class">Must set property 'test.class'</fail>
         <nbjpdastart addressproperty="jpda.address" name="${impl.title}" transport="${debug.transport}">
