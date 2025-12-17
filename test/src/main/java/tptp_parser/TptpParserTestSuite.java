@@ -11,7 +11,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     tptp_parser.THFTest.class,
     tptp_parser.FOFTest.class,
-    tptp_parser.ParseTestCases.class
+    tptp_parser.ParseTestCases.class,
+    tptp_parser.TPTPVisitorAssocTest.class
 })
 public class TptpParserTestSuite {
 
