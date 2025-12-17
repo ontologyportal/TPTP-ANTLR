@@ -608,11 +608,11 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
             if (debug) System.out.println("visitFofBinaryAssoc() child: " + c.getClass().getName());
             if (c instanceof TptpParser.Fof_or_formulaContext) {
                 f = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
-                f.sumo = f.sumo + ")";
+//                f.sumo = f.sumo + ")";
             }
             if (c instanceof TptpParser.Fof_and_formulaContext) {
                 f = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
-                f.sumo = f.sumo + ")";
+//                f.sumo = f.sumo + ")";
             }
         }
         if (debug) System.out.println("visitFofBinaryAssoc() returning: " + f);
@@ -624,89 +624,536 @@ public class TPTPVisitor extends AbstractParseTreeVisitor<String> {
      * fof_or_formula          : fof_unitary_formula Or fof_unitary_formula
      *                         | fof_or_formula Or fof_unitary_formula;
      */
+//    public static TPTPFormula visitFofOrFormula(TptpParser.Fof_or_formulaContext context) {
+//
+//        if (debug) System.out.println("visitFofOrFormula(): " + context.getText());
+//        TPTPFormula f = new TPTPFormula(), newf;
+//        for (ParseTree c : context.children) {
+//            if (debug) System.out.println("visitFofOrFormula() child: " + c.getClass().getName());
+//            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
+//                newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
+//                if (f.formula.equals("")) {
+//                    f.formula = newf.formula;
+//                    f.sumo = newf.sumo;
+//                }
+//                else {
+//                    f.formula = f.formula + "|" + newf.formula;
+//                    if (f.sumo.startsWith("(or"))
+//                        f.sumo = f.sumo + " " + newf.sumo;
+//                    else
+//                        f.sumo = "(or " + f.sumo + " " + newf.sumo;
+//                }
+//            }
+//            if (c instanceof TptpParser.Fof_or_formulaContext) {
+//                newf = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
+//                if (f.formula.equals("")) {
+//                    f.formula = newf.formula;
+//                    f.sumo = newf.sumo;
+//                }
+//                else {
+//                    f.formula = f.formula + "|" + newf.formula;
+//                    if (f.sumo.startsWith("(or"))
+//                        f.sumo = f.sumo + " " + newf.sumo;
+//                    else
+//                        f.sumo = "(or " + f.sumo + " " + newf.sumo;
+//                }
+//            }
+//        }
+//        if (debug) System.out.println("visitFofOrFormula() returning: " + f);
+//        if (debug) System.out.println("visitFofOrFormula() returning sumo: " + f.sumo);
+//        return f;
+//    }
+
+    /**
+     * Translates a TPTP conjunction (fof_and_formula) into a SUO-KIF expression.
+     *
+     * <p>
+     * This method constructs a <b>single, well-formed</b> SUO-KIF {@code (and ...)} expression
+     * while preserving the associative semantics of conjunction. In particular, it:
+     * </p>
+     *
+     * <ul>
+     *   <li>Returns a complete KIF expression, including balanced parentheses
+     *       (i.e., this method both opens and closes {@code (and ...)}).</li>
+     *
+     *   <li>Delays introducing the {@code (and ...)} wrapper until a second conjunct
+     *       is encountered, so a single conjunct is returned unchanged.</li>
+     *
+     *   <li><b>Flattens nested conjunctions</b>, producing
+     *       {@code (and A B C)} instead of {@code (and (and A B) C)}.</li>
+     *
+     *   <li>Handles nested conjunctions that appear either as explicit
+     *       {@code fof_and_formula} nodes <em>or</em> as parenthesized sub-formulas
+     *       returned from {@code visitFofUnitaryFormula()}.</li>
+     * </ul>
+     *
+     * <p>
+     * Flattening is implemented by detecting {@code (and ...)} sub-expressions,
+     * extracting their top-level arguments using {@code splitTopLevelKifArgs()},
+     * and splicing those arguments directly into the current conjunction.
+     * </p>
+     *
+     * <p>
+     * This design avoids malformed output and ensures that conjunctions are
+     * always represented as a single top-level KIF expression, which is required
+     * for correct handling under quantifiers and other higher-level constructs.
+     * </p>
+     *
+     * @param context the ANTLR parse context for a TPTP conjunction
+     * @return a {@link TPTPFormula} whose {@code sumo} field contains a valid,
+     *         flattened SUO-KIF {@code (and ...)} expression
+     */
     public static TPTPFormula visitFofOrFormula(TptpParser.Fof_or_formulaContext context) {
 
         if (debug) System.out.println("visitFofOrFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula(), newf;
+
+        TPTPFormula f = new TPTPFormula();
+        StringBuilder sumo = new StringBuilder();
+        StringBuilder tptp = new StringBuilder();
+
+        boolean openedOr = false;   // did we already write "(or " ?
+        int disjCount = 0;          // number of disjuncts appended
+
         for (ParseTree c : context.children) {
+
             if (debug) System.out.println("visitFofOrFormula() child: " + c.getClass().getName());
+
+            // 1) Unitary disjunct
             if (c instanceof TptpParser.Fof_unitary_formulaContext) {
-                newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
-                if (f.formula.equals("")) {
-                    f.formula = newf.formula;
-                    f.sumo = newf.sumo;
+
+                TPTPFormula newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
+
+                // TPTP-side reconstruction (best-effort)
+                if (tptp.length() > 0) tptp.append("|");
+                tptp.append(newf.formula);
+
+                // IMPORTANT: unitary formula may already be "(or ...)" due to parentheses/grouping
+                String ns = (newf.sumo == null) ? "" : newf.sumo.trim();
+
+                if (ns.startsWith("(or ") && ns.endsWith(")")) {
+                    String inside = ns.substring(4, ns.length() - 1).trim(); // remove "(or " and trailing ")"
+                    java.util.List<String> args = splitTopLevelKifArgs(inside);
+
+                    if (!args.isEmpty()) {
+                        for (String a : args) {
+                            disjCount++;
+
+                            if (disjCount == 2 && !openedOr) {
+                                String first = sumo.toString().trim();
+                                if (first.isEmpty()) {
+                                    sumo.setLength(0);
+                                    sumo.append("(or ");
+                                } else {
+                                    sumo.setLength(0);
+                                    sumo.append("(or ").append(first).append(" ");
+                                }
+                                openedOr = true;
+                            }
+
+                            if (openedOr) sumo.append(a).append(" ");
+                            else {
+                                sumo.setLength(0);
+                                sumo.append(a);
+                            }
+                        }
+                        continue; // done splicing
+                    }
+                    // fall through: if split fails, treat ns as atomic disjunct
                 }
+
+                // Atomic disjunct path
+                disjCount++;
+
+                if (disjCount == 2 && !openedOr) {
+                    String first = sumo.toString().trim();
+                    if (first.isEmpty()) {
+                        sumo.setLength(0);
+                        sumo.append("(or ");
+                    } else {
+                        sumo.setLength(0);
+                        sumo.append("(or ").append(first).append(" ");
+                    }
+                    openedOr = true;
+                }
+
+                if (openedOr) sumo.append(ns).append(" ");
                 else {
-                    f.formula = f.formula + "|" + newf.formula;
-                    if (f.sumo.startsWith("(or"))
-                        f.sumo = f.sumo + " " + newf.sumo;
-                    else
-                        f.sumo = "(or " + f.sumo + " " + newf.sumo;
+                    sumo.setLength(0);
+                    sumo.append(ns);
                 }
+
+                continue;
             }
+
+            // 2) Nested OR context (keep it; depending on grammar you might still see it)
             if (c instanceof TptpParser.Fof_or_formulaContext) {
-                newf = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
-                if (f.formula.equals("")) {
-                    f.formula = newf.formula;
-                    f.sumo = newf.sumo;
+
+                TPTPFormula newf = visitFofOrFormula((TptpParser.Fof_or_formulaContext) c);
+
+                // TPTP-side reconstruction
+                if (tptp.length() > 0) tptp.append("|");
+                tptp.append(newf.formula);
+
+                String ns = (newf.sumo == null) ? "" : newf.sumo.trim();
+
+                if (ns.startsWith("(or ") && ns.endsWith(")")) {
+                    String inside = ns.substring(4, ns.length() - 1).trim();
+                    java.util.List<String> args = splitTopLevelKifArgs(inside);
+
+                    if (!args.isEmpty()) {
+                        for (String a : args) {
+                            disjCount++;
+
+                            if (disjCount == 2 && !openedOr) {
+                                String first = sumo.toString().trim();
+                                if (first.isEmpty()) {
+                                    sumo.setLength(0);
+                                    sumo.append("(or ");
+                                } else {
+                                    sumo.setLength(0);
+                                    sumo.append("(or ").append(first).append(" ");
+                                }
+                                openedOr = true;
+                            }
+
+                            if (openedOr) sumo.append(a).append(" ");
+                            else {
+                                sumo.setLength(0);
+                                sumo.append(a);
+                            }
+                        }
+                        continue;
+                    }
+                    // fall through if split fails
                 }
+
+                // Atomic disjunct path
+                disjCount++;
+
+                if (disjCount == 2 && !openedOr) {
+                    String first = sumo.toString().trim();
+                    if (first.isEmpty()) {
+                        sumo.setLength(0);
+                        sumo.append("(or ");
+                    } else {
+                        sumo.setLength(0);
+                        sumo.append("(or ").append(first).append(" ");
+                    }
+                    openedOr = true;
+                }
+
+                if (openedOr) sumo.append(ns).append(" ");
                 else {
-                    f.formula = f.formula + "|" + newf.formula;
-                    if (f.sumo.startsWith("(or"))
-                        f.sumo = f.sumo + " " + newf.sumo;
-                    else
-                        f.sumo = "(or " + f.sumo + " " + newf.sumo;
+                    sumo.setLength(0);
+                    sumo.append(ns);
                 }
             }
         }
+
+        f.formula = tptp.toString();
+
+        // Close "(or ...)" if we opened it.
+        if (openedOr) {
+            int len = sumo.length();
+            if (len > 0 && Character.isWhitespace(sumo.charAt(len - 1))) sumo.setLength(len - 1);
+            sumo.append(")");
+        }
+
+        f.sumo = sumo.toString();
+
         if (debug) System.out.println("visitFofOrFormula() returning: " + f);
         if (debug) System.out.println("visitFofOrFormula() returning sumo: " + f.sumo);
+
         return f;
     }
+
 
     /** ***************************************************************
      * fof_and_formula         : fof_unitary_formula And fof_unitary_formula
      *                         | fof_and_formula And fof_unitary_formula;
      */
+//    public static TPTPFormula visitFofAndFormula(TptpParser.Fof_and_formulaContext context) {
+//
+//        if (debug) System.out.println("visitFofAndFormula(): " + context.getText());
+//        TPTPFormula f = new TPTPFormula(), newf;
+//        for (ParseTree c : context.children) {
+//            if (debug) System.out.println("visitFofAndFormula() child: " + c.getClass().getName());
+//            if (c instanceof TptpParser.Fof_unitary_formulaContext) {
+//                newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
+//                if (f.formula.equals("")) {
+//                    f.formula = newf.formula;
+//                    f.sumo = newf.sumo;
+//                }
+//                else {
+//                    f.formula = f.formula + "&" + newf.formula;
+//                    if (f.sumo.startsWith("(and"))
+//                        f.sumo = f.sumo + " " + newf.sumo;
+//                    else
+//                        f.sumo = "(and " + f.sumo + " " + newf.sumo;
+//                }
+//            }
+//            if (c instanceof TptpParser.Fof_and_formulaContext) {
+//                newf = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
+//                if (f.formula.equals("")) {
+//                    f.formula = newf.formula;
+//                    f.sumo = newf.sumo;
+//                }
+//                else {
+//                    f.formula = f.formula + "&" + newf.formula;
+//                    if (f.sumo.startsWith("(and"))
+//                        f.sumo = f.sumo + " " + newf.sumo;
+//                    else
+//                        f.sumo = "(and " + f.sumo + " " + newf.sumo;
+//                }
+//            }
+//        }
+//        if (debug) System.out.println("visitFofAndFormula() returning: " + f);
+//        if (debug) System.out.println("visitFofAndFormula() returning sumo: " + f.sumo);
+//        return f;
+//    }
+
+    /**
+     * Translates a TPTP conjunction (fof_and_formula) into a SUO-KIF expression.
+     *
+     * <p>
+     * This method constructs a <b>single, well-formed</b> SUO-KIF {@code (and ...)} expression
+     * while preserving the associative semantics of conjunction. In particular, it:
+     * </p>
+     *
+     * <ul>
+     *   <li>Returns a complete KIF expression, including balanced parentheses
+     *       (i.e., this method both opens and closes {@code (and ...)}).</li>
+     *
+     *   <li>Delays introducing the {@code (and ...)} wrapper until a second conjunct
+     *       is encountered, so a single conjunct is returned unchanged.</li>
+     *
+     *   <li><b>Flattens nested conjunctions</b>, producing
+     *       {@code (and A B C)} instead of {@code (and (and A B) C)}.</li>
+     *
+     *   <li>Handles nested conjunctions that appear either as explicit
+     *       {@code fof_and_formula} nodes <em>or</em> as parenthesized sub-formulas
+     *       returned from {@code visitFofUnitaryFormula()}.</li>
+     * </ul>
+     *
+     * <p>
+     * Flattening is implemented by detecting {@code (and ...)} sub-expressions,
+     * extracting their top-level arguments using {@code splitTopLevelKifArgs()},
+     * and splicing those arguments directly into the current conjunction.
+     * </p>
+     *
+     * <p>
+     * This design avoids malformed output and ensures that conjunctions are
+     * always represented as a single top-level KIF expression, which is required
+     * for correct handling under quantifiers and other higher-level constructs.
+     * </p>
+     *
+     * @param context the ANTLR parse context for a TPTP conjunction
+     * @return a {@link TPTPFormula} whose {@code sumo} field contains a valid,
+     *         flattened SUO-KIF {@code (and ...)} expression
+     */
     public static TPTPFormula visitFofAndFormula(TptpParser.Fof_and_formulaContext context) {
 
         if (debug) System.out.println("visitFofAndFormula(): " + context.getText());
-        TPTPFormula f = new TPTPFormula(), newf;
+
+        TPTPFormula f = new TPTPFormula();
+        StringBuilder sumo = new StringBuilder();
+        StringBuilder tptp = new StringBuilder();
+
+        boolean openedAnd = false;
+        int conjunctCount = 0;
+
         for (ParseTree c : context.children) {
-            if (debug) System.out.println("visitFofAndFormula() child: " + c.getClass().getName());
+
+            // 1) Unitary conjunct
             if (c instanceof TptpParser.Fof_unitary_formulaContext) {
-                newf = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
-                if (f.formula.equals("")) {
-                    f.formula = newf.formula;
-                    f.sumo = newf.sumo;
+
+                TPTPFormula part = visitFofUnitaryFormula((TptpParser.Fof_unitary_formulaContext) c);
+
+                if (tptp.length() > 0) tptp.append("&");
+                tptp.append(part.formula);
+
+                // IMPORTANT: a unitary formula can already be "(and ...)" (due to parentheses/grouping).
+                String ns = (part.sumo == null) ? "" : part.sumo.trim();
+
+                if (ns.startsWith("(and ") && ns.endsWith(")")) {
+                    String inside = ns.substring(5, ns.length() - 1).trim();
+                    java.util.List<String> args = splitTopLevelKifArgs(inside);
+
+                    if (!args.isEmpty()) {
+                        for (String a : args) {
+                            conjunctCount++;
+
+                            if (conjunctCount == 2 && !openedAnd) {
+                                String first = sumo.toString().trim();
+                                if (first.isEmpty()) {
+                                    sumo.setLength(0);
+                                    sumo.append("(and ");
+                                } else {
+                                    sumo.setLength(0);
+                                    sumo.append("(and ").append(first).append(" ");
+                                }
+                                openedAnd = true;
+                            }
+
+                            if (openedAnd) sumo.append(a).append(" ");
+                            else {
+                                sumo.setLength(0);
+                                sumo.append(a);
+                            }
+                        }
+                        continue; // done splicing
+                    }
+                    // fall through: if split fails, treat as atomic conjunct
                 }
+
+                // Atomic conjunct path
+                conjunctCount++;
+
+                if (conjunctCount == 2 && !openedAnd) {
+                    String first = sumo.toString().trim();
+                    if (first.isEmpty()) {
+                        sumo.setLength(0);
+                        sumo.append("(and ");
+                    } else {
+                        sumo.setLength(0);
+                        sumo.append("(and ").append(first).append(" ");
+                    }
+                    openedAnd = true;
+                }
+
+                if (openedAnd) sumo.append(ns).append(" ");
                 else {
-                    f.formula = f.formula + "&" + newf.formula;
-                    if (f.sumo.startsWith("(and"))
-                        f.sumo = f.sumo + " " + newf.sumo;
-                    else
-                        f.sumo = "(and " + f.sumo + " " + newf.sumo;
+                    sumo.setLength(0);
+                    sumo.append(ns);
                 }
+
+                continue;
             }
+
+            // 2) Nested AND context (rare depending on grammar, but keep it)
             if (c instanceof TptpParser.Fof_and_formulaContext) {
-                newf = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
-                if (f.formula.equals("")) {
-                    f.formula = newf.formula;
-                    f.sumo = newf.sumo;
+
+                TPTPFormula nested = visitFofAndFormula((TptpParser.Fof_and_formulaContext) c);
+
+                if (tptp.length() > 0) tptp.append("&");
+                tptp.append(nested.formula);
+
+                String ns = (nested.sumo == null) ? "" : nested.sumo.trim();
+
+                if (ns.startsWith("(and ") && ns.endsWith(")")) {
+                    String inside = ns.substring(5, ns.length() - 1).trim();
+                    java.util.List<String> args = splitTopLevelKifArgs(inside);
+
+                    if (!args.isEmpty()) {
+                        for (String a : args) {
+                            conjunctCount++;
+
+                            if (conjunctCount == 2 && !openedAnd) {
+                                String first = sumo.toString().trim();
+                                if (first.isEmpty()) {
+                                    sumo.setLength(0);
+                                    sumo.append("(and ");
+                                } else {
+                                    sumo.setLength(0);
+                                    sumo.append("(and ").append(first).append(" ");
+                                }
+                                openedAnd = true;
+                            }
+
+                            if (openedAnd) sumo.append(a).append(" ");
+                            else {
+                                sumo.setLength(0);
+                                sumo.append(a);
+                            }
+                        }
+                        continue;
+                    }
+                    // fall through if split fails
                 }
+
+                // Atomic conjunct path
+                conjunctCount++;
+
+                if (conjunctCount == 2 && !openedAnd) {
+                    String first = sumo.toString().trim();
+                    if (first.isEmpty()) {
+                        sumo.setLength(0);
+                        sumo.append("(and ");
+                    } else {
+                        sumo.setLength(0);
+                        sumo.append("(and ").append(first).append(" ");
+                    }
+                    openedAnd = true;
+                }
+
+                if (openedAnd) sumo.append(ns).append(" ");
                 else {
-                    f.formula = f.formula + "&" + newf.formula;
-                    if (f.sumo.startsWith("(and"))
-                        f.sumo = f.sumo + " " + newf.sumo;
-                    else
-                        f.sumo = "(and " + f.sumo + " " + newf.sumo;
+                    sumo.setLength(0);
+                    sumo.append(ns);
                 }
             }
         }
-        if (debug) System.out.println("visitFofAndFormula() returning: " + f);
+
+        f.formula = tptp.toString();
+
+        if (openedAnd) {
+            int len = sumo.length();
+            if (len > 0 && Character.isWhitespace(sumo.charAt(len - 1))) sumo.setLength(len - 1);
+            sumo.append(")");
+        }
+
+        f.sumo = sumo.toString();
+
         if (debug) System.out.println("visitFofAndFormula() returning sumo: " + f.sumo);
         return f;
     }
+
+
+    private static java.util.List<String> splitTopLevelKifArgs(String s) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        if (s == null) return out;
+
+        String str = s.trim();
+        if (str.isEmpty()) return out;
+
+        int depth = 0;
+        int start = -1;
+
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if (ch == '(') {
+                if (depth == 0) start = i;
+                depth++;
+            }
+            else if (ch == ')') {
+                depth--;
+                if (depth == 0 && start >= 0) {
+                    out.add(str.substring(start, i + 1).trim());
+                    start = -1;
+                }
+            }
+            else if (Character.isWhitespace(ch)) {
+                // ignore whitespace separators at depth 0
+            }
+            else {
+                // Handle atomic args at depth 0 (rare in your output, but safe)
+                if (depth == 0 && start < 0) {
+                    int j = i;
+                    while (j < str.length() && !Character.isWhitespace(str.charAt(j))) j++;
+                    out.add(str.substring(i, j).trim());
+                    i = j - 1;
+                }
+            }
+        }
+
+        // If something went wrong (unbalanced parentheses), fall back to “whole string”
+        if (out.isEmpty() && !str.isEmpty()) out.add(str);
+        return out;
+    }
+
+
+
 
     /** ***************************************************************
      * fof_unitary_formula     : fof_quantified_formula | fof_unary_formula
